@@ -127,6 +127,9 @@ class MRSPlotter(QMainWindow):
         self.ui.ppm_two_input.editingFinished.connect(self.update_preview)
         self.ui.ppm_three_input.editingFinished.connect(self.update_preview)
         self.ui.plot_type.currentTextChanged.connect(self.update_preview)
+        self.ui.plot_type.currentTextChanged.connect(self.ui.on_plot_type_changed)
+        self.ui.plot_type.currentTextChanged.connect(self.ui.update_export_options_enabled)
+        self.ui.plot_type.currentTextChanged.connect(self.ui.on_plot_type_changed)
         
         
         
@@ -891,12 +894,12 @@ class MRSPlotter(QMainWindow):
         # Add Multivoxel grid only if file type is multivoxel
         if hasattr(self, 'filetype') and self.filetype == 'multi_voxel':
             self.ui.plot_type.addItem('Multivoxel grid')
-            # Enable the export multivoxel grid checkbox
             self.ui.export_multivoxel_grid.setEnabled(True)
+            self.ui.select_mean.setEnabled(True)
         else:
             # Disable the export multivoxel grid checkbox for non-multivoxel files
             self.ui.export_multivoxel_grid.setEnabled(False)
-            self.ui.export_multivoxel_grid.setChecked(False)  # Also uncheck it
+            self.ui.export_multivoxel_grid.setChecked(False)
     
         # Restore selection if still valid, otherwise default to first option
         index = self.ui.plot_type.findText(current_selection)
@@ -1266,11 +1269,10 @@ class MRSPlotter(QMainWindow):
                 include_sdev=include_sdev,
                 plot_individual_plots=plot_individual_plots,
                 add_vertical_lines=add_vertical_lines,
-                legend_visible=self.legend_visible,
                 ppm_list_vertical=self.ppm_list_vertical_lines,
                 selected_color=selected_color_map,
                 ppm_range=self.valid_ppm_range,
-                y_limits=self.y_limits,
+                y_limits=None,
                 dpi=res_dpi,
                 statusbar=self.ui.statusbar,
                 export_figure=True

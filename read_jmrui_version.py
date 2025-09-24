@@ -137,9 +137,9 @@ def read_jmrui_text_data(filepath, ppm_range):
 
     
     if not has_reference_frequency and transmitter_freq > 0:
-        # Set 4.75 ppm as the new center reference
+        # Set 0 ppm as the new center reference
         center_freq_hz = freq_axis_hz[len(freq_axis_hz) // 2]
-        reference_frequency_hz = center_freq_hz - (4.75 * transmitter_freq * 1e-6)
+        reference_frequency_hz = center_freq_hz - (reference_frequency_hz * transmitter_freq * 1e-6)
     
     # Recalculate ppm_axis with this reference frequency
     ppm_axis = (freq_axis_hz - reference_frequency_hz) / (transmitter_freq * 1e-6)

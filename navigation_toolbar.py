@@ -11,11 +11,6 @@ class CustomNavigationToolbar(NavigationToolbar):
        
         # Determine if we're in dark mode
         is_dark_mode = self.palette().window().color().lightness() < 128
-       
-        if is_dark_mode:
-            self.setup_dark_mode_icons()
-        else:
-            self.setup_light_mode_icons()
            
         save_index = -1
         for i, action in enumerate(self.actions()):
@@ -40,12 +35,6 @@ class CustomNavigationToolbar(NavigationToolbar):
         self.reset_action.setToolTip("Reset Figure")
         self.reset_action.triggered.connect(self.parent.reset_figure)
 
-        is_dark_mode = self.palette().window().color().lightness() < 128
-        if is_dark_mode:
-            self.setup_dark_mode_icons()
-        else:
-            self.setup_light_mode_icons()
-
         if save_index >= 0:
             self.insertAction(self.actions()[save_index + 1], self.fontSizeAction)
             self.insertAction(self.actions()[save_index + 2], self.legend_action)
@@ -54,6 +43,12 @@ class CustomNavigationToolbar(NavigationToolbar):
             self.addAction(self.fontSizeAction)
             self.addAction(self.legend_action)
             self.addAction(self.reset_action)
+
+        # Setup icons based on theme - ONLY ONCE
+        if is_dark_mode:
+            self.setup_dark_mode_icons()
+        else:
+            self.setup_light_mode_icons()
 
         
     def toggle_legend(self):
@@ -96,14 +91,8 @@ class CustomNavigationToolbar(NavigationToolbar):
                             action.setIconVisibleInMenu(True)
                 except Exception:
                     pass  
-       
-        # Add a font size action with a theme-aware icon
-        self.fontSizeAction = QAction(self)
-        self.fontSizeAction.setIcon(QIcon.fromTheme("preferences-desktop-font"))
-        self.fontSizeAction.setToolTip("Change Font Size")
-        self.fontSizeAction.triggered.connect(self.parent.change_font_size)
-
-        # Set font size avtion
+        
+        # Set font size icon
         if hasattr(self, 'fontSizeAction'):
             self.fontSizeAction.setIcon(QIcon.fromTheme("preferences-desktop-font"))
         
@@ -113,7 +102,7 @@ class CustomNavigationToolbar(NavigationToolbar):
 
         # Set legend icon
         if hasattr(self, 'legend_action'):
-            dark_legend_path = path.join(path.dirname(path.abspath(__file__)), "resources", "edit-label-darkmode.tif")
+            dark_legend_path = path.join(path.dirname(path.abspath(__file__)), "resources", "edit-label-darkmode.png")
             if path.exists(dark_legend_path):
                 self.legend_action.setIcon(QIcon(dark_legend_path))
             else:
@@ -142,14 +131,8 @@ class CustomNavigationToolbar(NavigationToolbar):
                         action.setIcon(theme_icon)
                 except Exception:
                     pass
-       
-        # Add a font size action with a theme-aware icon
-        self.fontSizeAction = QAction(self)
-        self.fontSizeAction.setIcon(QIcon.fromTheme("preferences-desktop-font"))
-        self.fontSizeAction.setToolTip("Change Font Size")
-        self.fontSizeAction.triggered.connect(self.parent.change_font_size)
 
-          # Remove the fontSizeAction creation - just set the icon
+        # Set font size icon
         if hasattr(self, 'fontSizeAction'):
             self.fontSizeAction.setIcon(QIcon.fromTheme("preferences-desktop-font"))
         
@@ -159,12 +142,11 @@ class CustomNavigationToolbar(NavigationToolbar):
 
         # Set legend icon
         if hasattr(self, 'legend_action'):
-            light_legend_path = path.join(path.dirname(path.abspath(__file__)), "resources", "edit-label.tif")
+            light_legend_path = path.join(path.dirname(path.abspath(__file__)), "resources", "edit-label.png")
             if path.exists(light_legend_path):
                 self.legend_action.setIcon(QIcon(light_legend_path))
             else:
                 self.legend_action.setIcon(QIcon.fromTheme("view-list-text"))
-
 
         
     # Add a method to update icons when theme changes
@@ -235,5 +217,3 @@ class CustomNavigationToolbar(NavigationToolbar):
                     print(f"Figure saved to {fname}")
             except Exception as e2:
                 print(f"Error in QFileDialog save_figure fallback: {e2}")
-
-

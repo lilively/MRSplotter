@@ -173,6 +173,9 @@ class Ui_svPlotter(object):
         self.process_btn_layout.addWidget(self.process_files_btn)
         self.file_select_container.addLayout(self.process_btn_layout)
 
+
+
+
         ## Add the QGroupBox to the sidebar layout
         self.sidebar_layout.addWidget(self.file_select_group)
 
@@ -319,6 +322,7 @@ class Ui_svPlotter(object):
         # Connect plot type to control enabled state of configure button
         self.plot_type.currentTextChanged.connect(self.update_plot_config_enabled)
         # Set initial state
+     
         self.update_plot_config_enabled(self.plot_type.currentText())
         
 
@@ -494,7 +498,9 @@ class Ui_svPlotter(object):
         self.each_selected.stateChanged.connect(self.update_export_options_enabled)
         self.select_mean.stateChanged.connect(self.update_export_options_enabled)
         self.plot_type.currentTextChanged.connect(self.update_export_options_enabled)
-        self.add_lines_check.stateChanged.connect(self.update_export_options_enabled)  # Added this
+        self.add_lines_check.stateChanged.connect(self.update_export_options_enabled)  
+        # Set initial states based on default selections
+        self.on_plot_type_changed()
 
         self.update_export_options_enabled()
 

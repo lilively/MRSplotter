@@ -7,7 +7,8 @@ from determine_type_and_load import read_files
 from os import path, makedirs, listdir
 from status import update_status
 from numpy import isnan
-from pandas import notna 
+from pandas import notna
+from os import path
 
 
 
@@ -165,8 +166,9 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
 
                     # Plot the spectrum
                     ax.plot(xaxis, intensity_data, color=color_current, linewidth=LW)
-                    apply_common_plot_settingsMV(global_minIntensity, legend_visible, global_maxIntensity, ppm_range, ax=ax)
+                    apply_common_plot_settingsMV(global_minIntensity, global_maxIntensity, ppm_range, legend_visible=legend_visible, ax=ax)
 
+                    fileending = ''
                      # Add vertical reference lines if requested
                     if add_vertical_lines:
                         for i, item in enumerate(ppm_list_vertical):
@@ -205,7 +207,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 # Ensure directory exists
                 makedirs(output_directory, exist_ok=True)
                 # Define output path
-                filename = f"{case}_{fileending}{'grid'}.png"
+                filename = f"{case}_{fileending}grid.png"
                 outPath = path.join(output_directory, filename)
                 
                 # Save the figure

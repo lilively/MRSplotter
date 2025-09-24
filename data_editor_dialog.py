@@ -151,12 +151,18 @@ class DataEditorDialog(QDialog):
         # File menu
         file_menu = self.menu_bar.addMenu("Export")
         
-        # Export action
+        # Export CSV
         export_action = QAction("Export as csv", self)
         export_action.setShortcut(QKeySequence("Ctrl+E"))
         export_action.triggered.connect(self.export_to_csv)
         file_menu.addAction(export_action)
-    
+
+         # Export XML
+        export_action_xml = QAction("Export as xml (JMRUI2XML format)", self)
+        export_action_xml.setShortcut(QKeySequence("Ctrl+J"))
+        export_action_xml.triggered.connect(self.export_to_xml)
+        file_menu.addAction(export_action_xml)
+
     def toggle_maximize(self):
         """Toggle between maximized and normal window state"""
         if self.isMaximized():
@@ -330,7 +336,88 @@ class DataEditorDialog(QDialog):
                 QMessageBox.critical(self, "Export Error", 
                                     f"Error exporting data: {str(e)}")
                 self.status_bar.setText("Export failed")
-                        
+
+
+    def export_to_xml(self):
+        """Export the current view to XML with xaxis as a separate section"""
+        # Start in the output directory if specified
+        initial_dir = self.output_directory if self.output_directory else ""
+        
+        file_name, _ = QFileDialog.getSaveFileName(
+            self, "Save XML File in JMRUI2XML format", initial_dir, "XML Files (*.xml);;All Files (*)"
+        )
+        
+        if file_name:
+            try:
+                # Get the current data from the model
+                current_data = self.model.get_data()
+            
+                # Ensure file has .xml extension
+                if not file_name.lower().endswith('.xml'):
+                    file_name += '.xml'
+            
+                # Import required modules
+                import xml.etree.ElementTree as ET
+                from datetime import datetime
+            
+                # Create root element
+                root = ET.Element("Root")
+            
+                # Add export metadata as comment
+                export_comment = ET.Comment(f"Exported on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                root.append(export_comment)
+            
+                # Calculate PPM parameters
+                first_ppm = min(self.xaxis) if self.xaxis is not None else 0
+                last_ppm = max(self.xaxis) if self.xaxis is not None else 0
+                number_of_points = len(self.xaxis) if self.xaxis is not None else len(current_data.columns)
+            
+                # Process each row as a Case
+                for index, row in current_data.iterrows():
+                    case = ET.SubElement(root, "Case")
+                    case.set("ID", str(index))
+                
+                    # Add Tissue element (you may need to adjust this based on your data structure)
+                    tissue = ET.SubElement(case, "Tissue")
+                    # If you have a tissue type column, use it; otherwise use a default
+                    tissue_type = row.get('TissueType', 'Unknown') if 'TissueType' in row else 'Unknown'
+                    tissue.set("Type", str(tissue_type))
+                
+                    # Add Spectrum element with Parameters
+                    spectrum = ET.SubElement(case, "Spectrum")
+                    parameters = ET.SubElement(spectrum, "Parameters")
+                    parameters.set("FirstPPM", str(first_ppm))
+                    parameters.set("LastPPM", str(last_ppm))
+                    parameters.set("PointsNumber", str(number_of_points))
+                
+                    # Add Points element with spectral data
+                    points = ET.SubElement(spectrum, "Points")
+                    # Extract spectral data (assuming columns starting with PPM_ contain the spectral points)
+                    spectral_columns = [col for col in current_data.columns if col.startswith('PPM_')]
+                    if spectral_columns:
+                        # Use PPM columns if available
+                        spectral_data = [str(row[col]) for col in spectral_columns]
+                    else:
+                        # Use all numeric columns if no PPM columns found
+                        numeric_columns = current_data.select_dtypes(include=['number']).columns
+                        spectral_data = [str(row[col]) for col in numeric_columns if col not in ['ID', 'TissueType']]
+                
+                    points.text = ' '.join(spectral_data)
+            
+                # Create the tree and write to file
+                tree = ET.ElementTree(root)
+                ET.indent(tree, space="  ", level=0)  # Pretty print formatting
+                tree.write(file_name, encoding='utf-8', xml_declaration=True)
+            
+                QMessageBox.information(self, "Export Successful",
+                                    f"Data exported to {file_name} successfully.")
+                self.status_bar.setText(f"Exported data to {file_name}")
+                
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error",
+                                    f"Error exporting data: {str(e)}")
+                self.status_bar.setText("Export failed")
+
     
     def handle_accept(self):
         """Handle OK button click (like accept in QDialog)"""
