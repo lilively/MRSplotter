@@ -839,7 +839,7 @@ class MRSPlotter(QMainWindow):
 
         self.valid_ppm_range = validate_ppm_range(ppm_range, self.file_firstPPM, self.file_lastPPM, statusbar=self.ui.statusbar, parent=self)
          # Update PPM input
-        self.ui.last_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}")
+        self.ui.first_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}") ###CH
         self.ui.last_ppm_input.setText(f"{self.valid_ppm_range[1]:.2f}")
         
         # Store the selected files for future reference

@@ -1,6 +1,6 @@
 from pathlib import Path
 from filter_data_ppm import get_PPM
-from numpy import linspace, flip
+from numpy import linspace, flip, nan
 from status import update_status
 from pandas import concat, DataFrame
 import xml.etree.ElementTree as ET
@@ -38,12 +38,16 @@ def readXML_jmrui(filepath, ppm_range):
         # 'FirstPPM': float(voxel.get('FirstPPM')),
         # 'LastPPM': float(voxel.get('LastPPM')),
         # 'number_of_points': int(voxel.get('number_of_points')),
-        # 'SNR': float(voxel.get('SNR')),
+        #'SNR': float(voxel.get('SNR')),
         # 'Xaxis': int(voxel.get('Xaxis')),
         # 'Yaxis': int(voxel.get('Yaxis')),
         # #'Zaxis': int(voxel.get('Zaxis')),
         'TissueType': voxel.find('Tissue').get('Type'),}
 
+        #voxel_data['SNR'] = float(voxel.get('SNR')) if voxel.get('SNR') else None
+        if voxel_data.get('SNR') is not None:
+            voxel_data['SNR'] = float(voxel_data.get('SNR'))
+            
         voxel_data.update({'PPM_{}'.format(i): points_filtered[i] for i in range(len(points_filtered))})
         
         data.append(voxel_data)
@@ -88,7 +92,12 @@ def readXML_SpectraClassifier(ppm_range, filepath, output_directory=None,  statu
             #'Dataset': case.find('Spectrum').get('Name'),
             }
 
+            snr_param = case.find('.//Parameters')
+            if snr_param is not None and snr_param.get('SNR') is not None:
+                voxel_data['SNR'] = float(snr_param.get('SNR'))
+
             voxel_data.update({'PPM_{}'.format(i): points_filtered[i] for i in range(len(points_filtered))})
+            
             data.append(voxel_data)
 
         dataTable = DataFrame(data)
@@ -171,9 +180,12 @@ def read_multi_voxel_as_table(filepath,ppm_range):
             max_point = get_PPM(ppm_range[1], number_of_points, lastPPM, firstPPM)
 
             points_filtered = points[max_point:min_point+1]
-
+            if grid.get('SNR') is not None:
+                row_data['SNR'] = float(grid.get('SNR'))
+            
             row_data.update({'PPM_{}'.format(i): points_filtered[i] for i in range(len(points_filtered))})
-
+            
+        
             data.append(row_data)
         except (TypeError, ValueError) as e:
             raise ValueError(f"Error processing grid data: {e}")

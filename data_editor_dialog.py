@@ -339,86 +339,153 @@ class DataEditorDialog(QDialog):
 
 
     def export_to_xml(self):
-        """Export the current view to XML with xaxis as a separate section"""
-        # Start in the output directory if specified
+        """Export the current view to XML in SpectraClassifier format"""
         initial_dir = self.output_directory if self.output_directory else ""
         
         file_name, _ = QFileDialog.getSaveFileName(
-            self, "Save XML File in JMRUI2XML format", initial_dir, "XML Files (*.xml);;All Files (*)"
+            self, "Save XML File in SpectraClassifier format", initial_dir, "XML Files (*.xml);;All Files (*)"
         )
         
         if file_name:
             try:
-                # Get the current data from the model
                 current_data = self.model.get_data()
-            
-                # Ensure file has .xml extension
+                
                 if not file_name.lower().endswith('.xml'):
                     file_name += '.xml'
-            
-                # Import required modules
+                
                 import xml.etree.ElementTree as ET
                 from datetime import datetime
-            
-                # Create root element
-                root = ET.Element("Root")
-            
-                # Add export metadata as comment
-                export_comment = ET.Comment(f"Exported on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                root.append(export_comment)
-            
-                # Calculate PPM parameters
-                first_ppm = min(self.xaxis) if self.xaxis is not None else 0
-                last_ppm = max(self.xaxis) if self.xaxis is not None else 0
-                number_of_points = len(self.xaxis) if self.xaxis is not None else len(current_data.columns)
-            
-                # Process each row as a Case
-                for index, row in current_data.iterrows():
-                    case = ET.SubElement(root, "Case")
-                    case.set("ID", str(index))
                 
-                    # Add Tissue element (you may need to adjust this based on your data structure)
-                    tissue = ET.SubElement(case, "Tissue")
-                    # If you have a tissue type column, use it; otherwise use a default
-                    tissue_type = row.get('TissueType', 'Unknown') if 'TissueType' in row else 'Unknown'
-                    tissue.set("Type", str(tissue_type))
+                root = ET.Element("DATASET")
+                root.set("CreatedBy", "MRSPlotter")
+                root.set("Date", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                root.set("Format", "SpectraClassifier")
                 
-                    # Add Spectrum element with Parameters
-                    spectrum = ET.SubElement(case, "Spectrum")
-                    parameters = ET.SubElement(spectrum, "Parameters")
-                    parameters.set("FirstPPM", str(first_ppm))
-                    parameters.set("LastPPM", str(last_ppm))
-                    parameters.set("PointsNumber", str(number_of_points))
+                # Get spectral data columns
+                ppm_cols = sorted([col for col in current_data.columns if col.startswith('PPM_')],
+                                key=lambda x: int(x.split('_')[1]))
                 
-                    # Add Points element with spectral data
-                    points = ET.SubElement(spectrum, "Points")
-                    # Extract spectral data (assuming columns starting with PPM_ contain the spectral points)
-                    spectral_columns = [col for col in current_data.columns if col.startswith('PPM_')]
-                    if spectral_columns:
-                        # Use PPM columns if available
-                        spectral_data = [str(row[col]) for col in spectral_columns]
-                    else:
-                        # Use all numeric columns if no PPM columns found
-                        numeric_columns = current_data.select_dtypes(include=['number']).columns
-                        spectral_data = [str(row[col]) for col in numeric_columns if col not in ['ID', 'TissueType']]
+                # Get PPM parameters from xaxis
+                first_ppm = min(self.xaxis) if self.xaxis is not None and len(self.xaxis) > 0 else 0
+                last_ppm = max(self.xaxis) if self.xaxis is not None and len(self.xaxis) > 0 else 0
+                number_of_points = len(ppm_cols)
                 
-                    points.text = ' '.join(spectral_data)
-            
-                # Create the tree and write to file
+                case_count = 0
+                
+                # Process each unique ID as a separate Case
+                if 'ID' in current_data.columns:
+                    unique_ids = current_data['ID'].unique()
+                    print(f"Processing {len(unique_ids)} unique IDs as Cases...")
+                    
+                    for unique_id in unique_ids:
+                        # Get all rows for this ID (should typically be just 1 row)
+                        id_rows = current_data[current_data['ID'] == unique_id]
+                        
+                        if len(id_rows) > 1:
+                            print(f"Warning: ID '{unique_id}' has {len(id_rows)} rows. Using first row only.")
+                        
+                        # Use the first (or only) row for this ID
+                        row = id_rows.iloc[0]
+                        
+                        # Create Case element
+                        case = ET.SubElement(root, "Case")
+                        case.set("ID", str(unique_id))
+                        
+                        # Add Tissue element
+                        tissue = ET.SubElement(case, "Tissue")
+                        tissue.set("Type", str(row.get('TissueType', 'Unknown')))
+                        tissue.text = ""  # Prevent self-closing
+                        
+                        # Add Spectrum element
+                        spectrum = ET.SubElement(case, "Spectrum")
+                        spectrum.set("Name", str(unique_id))  # Use ID as spectrum name
+                        
+                        
+                        
+                        # Add Parameters element
+                        parameters = ET.SubElement(spectrum, "Parameters")
+                        parameters.set("FirstPPM", str(first_ppm))
+                        parameters.set("LastPPM", str(last_ppm))
+                        parameters.set("PointsNumber", str(number_of_points))
+                        
+                        # Add optional SNR if available
+                        if 'SNR' in row:
+                            parameters.set("SNR", str(row['SNR']))
+
+                        # Add Points element with spectral data
+                        points = ET.SubElement(spectrum, "Points")
+                        
+                        # Extract spectral data for this row
+                        spectral_data = []
+                        for col in ppm_cols:
+                            val = row[col]
+                            if val is None or str(val).lower() in ['nan', 'inf', '-inf']:
+                                spectral_data.append('0.0')
+                            else:
+                                spectral_data.append(str(float(val)))
+                        
+                        points.text = ' '.join(spectral_data)
+                        case_count += 1
+                        
+                        # # Debug first few cases
+                        # if case_count <= 3:
+                        #     print(f"Case {case_count}: ID='{unique_id}', TissueType='{row.get('TissueType')}', Points={len(spectral_data)}")
+                        #     if 'SNR' in row:
+                        #         print(f"  SNR: {row['SNR']}")
+                
+                else:
+                    # Fallback: treat each row as separate case if no ID column
+                    print("No ID column found. Treating each row as separate case.")
+                    for index, row in current_data.iterrows():
+                        case = ET.SubElement(root, "Case")
+                        case.set("ID", f"case_{index}")
+                        
+                        tissue = ET.SubElement(case, "Tissue")
+                        tissue.set("Type", str(row.get('TissueType', 'Unknown')))
+                        tissue.text = ""
+                        
+                        spectrum = ET.SubElement(case, "Spectrum")
+                        spectrum.set("Name", f"spectrum_{index}")
+                        
+                        
+                        
+                        parameters = ET.SubElement(spectrum, "Parameters")
+                        parameters.set("FirstPPM", str(first_ppm))
+                        parameters.set("LastPPM", str(last_ppm))
+                        parameters.set("PointsNumber", str(number_of_points))
+                        
+                        if 'SNR' in row:
+                            parameters.set("SNR", str(row['SNR']))
+
+                        points = ET.SubElement(spectrum, "Points")
+                        spectral_data = []
+                        for col in ppm_cols:
+                            val = row[col]
+                            if val is None or str(val).lower() in ['nan', 'inf', '-inf']:
+                                spectral_data.append('0.0')
+                            else:
+                                spectral_data.append(str(float(val)))
+                        
+                        points.text = ' '.join(spectral_data)
+                        case_count += 1
+                
+                # print(f"Total Cases created: {case_count}")
+                # print("=== END EXPORT DEBUG ===\n")
+                
+                # Write file
                 tree = ET.ElementTree(root)
-                ET.indent(tree, space="  ", level=0)  # Pretty print formatting
+                ET.indent(tree, space="  ", level=0)
                 tree.write(file_name, encoding='utf-8', xml_declaration=True)
-            
-                QMessageBox.information(self, "Export Successful",
-                                    f"Data exported to {file_name} successfully.")
-                self.status_bar.setText(f"Exported data to {file_name}")
+                
+                QMessageBox.information(self, "Export Successful", 
+                                    f"Exported {case_count} cases to {file_name} in SpectraClassifier format")
+                self.status_bar.setText(f"Exported {case_count} cases to {file_name}")
                 
             except Exception as e:
-                QMessageBox.critical(self, "Export Error",
-                                    f"Error exporting data: {str(e)}")
+                QMessageBox.critical(self, "Export Error", f"Error: {str(e)}")
                 self.status_bar.setText("Export failed")
+                print(f"Export error: {e}")
 
-    
     def handle_accept(self):
         """Handle OK button click (like accept in QDialog)"""
         reply = QMessageBox.question(

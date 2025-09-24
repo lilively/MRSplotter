@@ -12,6 +12,9 @@ def determine_filetype(filepath_list):
         tree = ET.parse(filepath)
         root = tree.getroot()
 
+        if root.get('CreatedBy') == 'MRSPlotter' and root.get('Format') == 'SpectraClassifier':
+            return 'SpectraClassifier'
+        
         grid_elements = root.findall('.//Grid')
         if grid_elements:
             # Check if any Grid element contains a Voxel with Xaxis attribute
@@ -30,6 +33,7 @@ def determine_filetype(filepath_list):
         elif root.findall('.//Voxel'):
             return 'jMRUI2XML'
         
+
         else:
             return None  # Unknown XML structure
     
