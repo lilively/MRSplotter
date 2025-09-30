@@ -1,6 +1,7 @@
 
 
 from plot_settings import add_vertical_line_with_text, apply_common_plot_settingsMV
+from aspect_ratio import calculate_figure_size
 from matplotlib import path, pyplot as plt
 from matplotlib.gridspec import GridSpec
 from determine_type_and_load import read_files
@@ -108,7 +109,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         height_inches = canvas_height / dpi
         figsize = (width_inches, height_inches)
     else:
-        figsize = (24, 12) 
+        figsize = calculate_figure_size(dataTable, canvas_width, canvas_height, dpi, base_size=12)
     
     # Track if exported any figures
     exported_count = 0
@@ -122,11 +123,12 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         else:
             fig.clear()
         filename = case  
-        fig.suptitle(filename, fontweight='bold', fontsize=12)
+        #fig.suptitle(filename, fontweight='bold', fontsize=12)
+        fig.suptitle(filename, fontweight='bold', fontsize=12, y=0.98)
         
         # Create grid layout
         gs = GridSpec(ylen, xlen, figure=fig, hspace=0.0, wspace=0.0)
-        
+        fig.subplots_adjust(top=0.95)
         counter = 0
         
         for y_idx, y_pos in enumerate(range(ymin, ymax+1)): 
@@ -148,9 +150,8 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                     else:
                         color_current = "#000000"
                     
-                    # Add coordinate label
-                    coord_label = f"{x_pos}-{y_pos}"
-                    total_subplots = len(x_values) * len(y_values)
+                    # Adjust font size and label position based on total subplots
+                    total_subplots = len(x_values) * len(y_values)                     
                     if total_subplots > 16:
                         font_size = 6
                         x_al, y_al = 0.02, 0.98
@@ -168,6 +169,12 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                     ax.plot(xaxis, intensity_data, color=color_current, linewidth=LW)
                     apply_common_plot_settingsMV(global_minIntensity, global_maxIntensity, ppm_range, legend_visible=legend_visible, ax=ax)
 
+                    # Add coordinate label
+                    if legend_visible:
+                        coord_label = f"{x_pos}-{y_pos}"
+                        ax.text(x_al, y_al, coord_label, transform=ax.transAxes,
+                        verticalalignment='top', fontweight='bold', fontsize=font_size)
+
                     fileending = ''
                      # Add vertical reference lines if requested
                     if add_vertical_lines:
@@ -179,8 +186,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
 
                     
 
-                    ax.text(x_al, y_al, coord_label, transform=ax.transAxes,
-                            verticalalignment='top', fontweight='bold', fontsize=font_size)
+
                     
                     # ax.text(0.05, 0.85, coord_label, transform=ax.transAxes, 
                     #     verticalalignment='bottom', fontweight='bold', fontsize=8)

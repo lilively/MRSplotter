@@ -190,6 +190,7 @@ class MRSPlotter(QMainWindow):
     def update_legend_status(self):
             if hasattr(self.toolbar, 'legend_action'):
                 self.legend_visible = self.toolbar.legend_action.isChecked()
+                self.update_preview()
 
     def reset_figure(self):
         """Reset figure layout to defaults and force a complete redraw"""
