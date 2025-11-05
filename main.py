@@ -1273,6 +1273,7 @@ class MRSPlotter(QMainWindow):
                 ppm_list_vertical=self.ppm_list_vertical_lines,
                 selected_color=selected_color_map,
                 ppm_range=self.valid_ppm_range,
+                legend_visible=self.legend_visible,
                 y_limits=None,
                 dpi=res_dpi,
                 statusbar=self.ui.statusbar,

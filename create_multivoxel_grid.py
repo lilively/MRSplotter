@@ -124,8 +124,9 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
             fig.clear()
         filename = case  
         #fig.suptitle(filename, fontweight='bold', fontsize=12)
-        fig.suptitle(filename, fontweight='bold', fontsize=12, y=0.98)
-        
+        if legend_visible:
+            fig.suptitle(filename, fontweight='bold', fontsize=12, y=0.98)
+
         # Create grid layout
         gs = GridSpec(ylen, xlen, figure=fig, hspace=0.0, wspace=0.0)
         fig.subplots_adjust(top=0.95)
@@ -217,7 +218,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 outPath = path.join(output_directory, filename)
                 
                 # Save the figure
-                fig.savefig(outPath, dpi=dpi, bbox_inches='tight')
+                fig.savefig(outPath, dpi=dpi, bbox_inches='tight', pad_inches=0)
 
                 # Update status bar if available
                 if statusbar:
@@ -235,6 +236,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
 
 def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                    plot_individual_plots, add_vertical_lines, ppm_list_vertical, selected_color, ppm_range,
+                   legend_visible=False,
                    y_limits=None, export_figure=True, dpi=300, statusbar=None):
     """
     Export multivoxel grid plots for all cases in the loaded dataTable
@@ -275,6 +277,7 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
                 export_figure=export_figure, 
                 dpi=dpi, 
                 statusbar=statusbar,
+                legend_visible=legend_visible,
                 fig=None 
             )
             
