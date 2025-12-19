@@ -10,7 +10,7 @@
 Open source software for visualizing and generating publication-ready plots from processed <sup>1</sup>H magnetic resonance spectroscopy data.
 
 
-Full software documentation can be found [here](https://lilively.github.io/MRSPlotter/MRS%20Plotter%20Instructions.pdf).
+Full software documentation can be found [here](hMRS%20Plotter%20Instructions.pdf).
  
 # Overview
 
@@ -55,7 +55,7 @@ python main.py
 
 ### For Python Installation
 
-**Python 3.8+** with the following packages (see [requirements.txt](https://lilively.github.io/MRSPlotter/requirements.txt)):
+**Python 3.8+** with the following packages (see [requirements.txt](requirements.txt)):
 - PyQt6 >= 6.4.0
 - matplotlib >= 3.5.0
 - numpy >= 1.21.0
