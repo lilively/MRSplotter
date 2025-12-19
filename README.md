@@ -8,12 +8,11 @@ and Biomedicine (IBB), Universitat Autònoma de Barcelona (UAB)
 <margarita.julia@uab.cat>
 
 
-## Windows Installation**
+## Windows Installation
 
 Download the latest release from the GitHub releases page. Extract the contents of the ZIP file to a desired location on your computer. Navigate to the extracted folder and run `MRSPlotter.exe` to launch the application.
 
 [![Download](https://img.shields.io/badge/Download_Latest_Release-383B96?style=for-the-badge)](https://github.com/lilively/MRSPlotter/releases/latest)
-
 
 
 ## Installation from Source
