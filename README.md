@@ -7,7 +7,7 @@
 
 <!-- <h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="150" style="vertical-align: middle;"> </h1> -->
 
-Open source software for visualizing and generating publication-ready plots from processed ^1^H magnetic resonance spectroscopy data.
+Open source software for visualizing and generating publication-ready plots from processed <sup>1</sup>H magnetic resonance spectroscopy data.
 
 
 Full software documentation can be found [here](https://lilively.github.io/MRSPlotter/MRS%20Plotter%20Instructions.pdf).
