@@ -7,6 +7,24 @@ and Biomedicine (IBB), Universitat Autònoma de Barcelona (UAB)
 [lilifanni.toth@uab.cat](mailto:LiliFanni.Toth@uab.cat)**,**
 <margarita.julia@uab.cat>
 
+
+## Windows Installation**
+Download the latest release from the GitHub releases page. Extract the contents of the ZIP file to a desired location on your computer. Navigate to the extracted folder and run `MRSPlotter.exe` to launch the application.
+[![Download](https://img.shields.io/badge/Download_Latest_Release-383B96?style=for-the-badge)](https://github.com/lilively/MRSPlotter/releases/latest)
+
+
+
+## Installation from Source
+
+Clone the repository from GitHub to your local machine:
+```bash
+git clone https://github.com/lilively/MRSPlotter
+```
+Navigate to the project directory and run the main script:
+```bash
+python main.py
+```
+
 **Overview:**
 
 MRSPlotter is a specialized software tool for the visualization and
@@ -28,37 +46,6 @@ publications and presentations.
 - Permissions: Write access to folders where you intend to save exported plots
 - Python 3.7 or higher
 - Required Python Libraries:
-    - PyQt5
-    - Matplotlib
-    - NumPy
-    - Pandas
-    - lxml
-    - seaborn
-    - openpyxl
-    - scipy
-    - scikit-learn
-    - statsmodels
-    - adjustText
-    - tifffile
-    - pillow
-    - python-pptx
-    - docx
-    - xlrd
 
-**Windows Installation**
 
-Download the latest executable from the [Releases page](https://github.com/lilively/MRSPlotter/releases).
 
-Extract the contents of the MRSPlotter compressed archive and execute the MRSPlotter.exe file.
-
-**Installation from Source**
-
-Clone the repository from GitHub to your local machine:
-```bash
-git clone https://github.com/lilively/MRSPlotter
-```
-
-Navigate to the project directory and run the main script:
-```bash
-python main.py
-```
