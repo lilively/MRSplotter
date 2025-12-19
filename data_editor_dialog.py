@@ -158,8 +158,8 @@ class DataEditorDialog(QDialog):
         file_menu.addAction(export_action)
 
          # Export XML
-        export_action_xml = QAction("Export as xml (JMRUI2XML format)", self)
-        export_action_xml.setShortcut(QKeySequence("Ctrl+J"))
+        export_action_xml = QAction("Export as xml (SpectraClassifier format)", self)
+        export_action_xml.setShortcut(QKeySequence("Ctrl+X"))
         export_action_xml.triggered.connect(self.export_to_xml)
         file_menu.addAction(export_action_xml)
 

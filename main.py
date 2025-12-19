@@ -183,7 +183,7 @@ class MRSPlotter(QMainWindow):
 
     def create_figure(self):
         """Create a figure for display"""
-
+        
         self.figure = plt.figure(figsize=(8, 6))
         return self.figure
     
