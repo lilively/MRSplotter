@@ -34,6 +34,7 @@ Download the latest release from the GitHub releases page. Extract the contents 
 
 
 ## Installation from Source
+The software can also be run from source using Python. Ensure you have Python 3.8 or higher installed. The simplest way to obtain the program is downloading the source code as a ZIP file from this repository and extracting it, or cloning with git.
 
 Clone the repository from GitHub to your local machine:
 ```bash

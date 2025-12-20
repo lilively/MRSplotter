@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QFileDialog, QListWidgetItem, QColorDialog, QSizePolicy, QDialog, QInputDialog, QMessageBox,
     QStyle
 )
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtCore import Qt, QEvent, QSettings
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from combine_labels_dialog import CombineLabelDialog
@@ -38,7 +38,17 @@ class MRSPlotter(QMainWindow):
         self.ui.setupUi(self)
         icon_path = path.join(path.dirname(path.abspath(__file__)), "resources", "favicon-32x32.png")
         self.setWindowIcon(QIcon(icon_path))
+        self.settings = QSettings(" ", "MRSPlotter")
+
+        # Create a color dialog for reuse
+         # Create a color dialog for reuse
+        self.color_dialog = QColorDialog(self)
+        self.color_dialog.setOption(QColorDialog.ColorDialogOption.DontUseNativeDialog, True)
         
+        # Load custom colors from persistent storage
+        self.custom_colors = self.load_custom_colors()
+
+
         # Connect the Update limits button
         self.ui.update_xaxis.clicked.connect(self.confirm_and_update)
     
@@ -440,27 +450,69 @@ class MRSPlotter(QMainWindow):
             self.ui.labels_found.item(0).setSelected(True)
 
     def label_double_clicked(self, item):
-        """Handle double-click on a label item to pick a color"""
         label = item.text()
-        color = QColorDialog.getColor(initial=self.color_map.get(label, QColor("#000000")))
+        current_color = self.color_map.get(label, QColor("#000000"))
+        self.color_dialog.setCurrentColor(current_color)
         
-        if color.isValid():
+        # Restore previously saved custom colors
+        for i in range(16):
+            if i < len(self.custom_colors) and self.custom_colors[i].isValid():
+                self.color_dialog.setCustomColor(i, self.custom_colors[i])
+        
+        if self.color_dialog.exec():
+            color = self.color_dialog.currentColor()
+            
+            # Save all custom colors for next time
+            for i in range(16):
+                self.custom_colors[i] = self.color_dialog.customColor(i)
+            
+            # IMPORTANT: Save to disk for persistence between sessions
+            self.save_custom_colors_to_disk()
+            
             self.color_map[label] = color
             item.setData(Qt.ItemDataRole.UserRole, color)
-            self.ui.labels_found.update()  # Update the list widget
-            self.update_preview()  # Update the plot with new colors
-    
+            self.ui.labels_found.update()
+            self.update_preview()
+
     def pick_color_for_item(self, index):
-        """Pick a color for a specific item when its color box is clicked"""
         item = self.ui.labels_found.item(index.row())
         label = item.text()
-        color = QColorDialog.getColor(initial=self.color_map.get(label, QColor("#000000")))
+        current_color = self.color_map.get(label, QColor("#000000"))
+        self.color_dialog.setCurrentColor(current_color)
         
-        if color.isValid():
+        # Restore previously saved custom colors
+        for i in range(16):
+            if i < len(self.custom_colors) and self.custom_colors[i].isValid():
+                self.color_dialog.setCustomColor(i, self.custom_colors[i])
+        
+        if self.color_dialog.exec():
+            color = self.color_dialog.currentColor()
+            
+            # Save all custom colors for next time
+            for i in range(16):
+                self.custom_colors[i] = self.color_dialog.customColor(i)
+            
+            # IMPORTANT: Save to disk for persistence between sessions
+            self.save_custom_colors_to_disk()
+            
             self.color_map[label] = color
             item.setData(Qt.ItemDataRole.UserRole, color)
-            self.ui.labels_found.update()  # Update the list widget
-            self.update_preview()  # Update the plot with new colors
+            self.ui.labels_found.update()
+            self.update_preview()
+
+    def load_custom_colors(self):
+        """Load custom colors from QSettings"""
+        colors = []
+        for i in range(16):
+            color_name = self.settings.value(f"customColor{i}", "#ffffff")
+            colors.append(QColor(color_name))
+        return colors
+
+    def save_custom_colors_to_disk(self):
+        """Save custom colors to QSettings for persistence between sessions"""
+        for i in range(16):
+            if self.custom_colors[i].isValid():
+                self.settings.setValue(f"customColor{i}", self.custom_colors[i].name())
 
     def show_combine_labels_dialog(self):
         """Show dialog to combine labels into classes"""
@@ -1319,7 +1371,7 @@ class MRSPlotter(QMainWindow):
             except Exception as e:
                 self.ui.statusbar.showMessage(f"Error exporting intensities: {str(e)}", 5000)
         
-        # CRITICAL: Make sure we set the current figure back to our canvas figure
+        # Restore the original figure to avoid disrupting the main canvas
         plt.figure(self.figure.number)
         
         # Force redraw of the canvas to restore the plot
