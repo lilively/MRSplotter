@@ -14,16 +14,7 @@ Full software documentation can be found [here](MRS%20Plotter%20Instructions.pdf
  
 # Overview
 
-MRSPlotter is a specialized software tool for the visualization and
-generating publication-ready plots from jMRUI text format or the
-standardized XML format produced by jMRUI2XML. . The application
-supports loading both single- and multivoxel files containing spectral
-data, viewing, editing, and exporting the data in CSV format. This
-allows for modifications, such as filling in missing information, before
-using the created CSV file as input data. Additionally, MRSPlotter
-enables the generation of various plot types, including subplots and
-superimposed plots, and facilitates the export of visualizations for
-publications and presentations.
+MRSPlotter is a specialized software tool designed for visualizing magnetic resonance spectroscopy data and generating publication-quality figures from various file formats. The application accommodates both single-voxel and multivoxel spectral data files. Users can view and edit the data and subsequently export it in CSV or standardized XML format. This workflow enables modifications, such as adding missing information, before using the files for plotting. MRSPlotter produces a range of plot types, including subplots and overlaid spectra, and exports figures suitable for both publication and presentation.
 
 
 ## Windows Installation
