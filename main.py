@@ -38,7 +38,7 @@ class MRSPlotter(QMainWindow):
         self.ui.setupUi(self)
         icon_path = path.join(path.dirname(path.abspath(__file__)), "resources", "favicon-32x32.png")
         self.setWindowIcon(QIcon(icon_path))
-        self.settings = QSettings(" ", "MRSPlotter")
+        self.settings = QSettings(" ", "MRSplotter")
 
         # Create a color dialog for reuse
          # Create a color dialog for reuse

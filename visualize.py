@@ -544,7 +544,7 @@ class Ui_svPlotter(object):
 
     def retranslateUi(self, svPlotter):
         _translate = QtCore.QCoreApplication.translate
-        svPlotter.setWindowTitle(_translate("svPlotter", "MRS Plotter"))
+        svPlotter.setWindowTitle(_translate("svPlotter", "MRSplotter"))
         
         # File selection group
         self.file_select_group.setTitle(_translate("svPlotter", "Select file(s) for plotting"))
