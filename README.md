@@ -1,7 +1,7 @@
 <!-- # MRSPlotter -->
 
 
-[![DOI](https://img.shields.io/badge/DOI-1https://doi.org/10.5281/zenodo.17987686-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.17987686)  [![License: CC BY-NC-ND 4.0 Plus](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0_Plus-383B96?style=for-the-badge)](https://creativecommons.org/licenses/by-nc-nd/4.0)
+[![DOI](https://img.shields.io/badge/DOI-1https://doi.org/10.5281/zenodo.17987686-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.17987686)
 
 <h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="60" style="vertical-align: middle;"> MRSPlotter</h1>
 
