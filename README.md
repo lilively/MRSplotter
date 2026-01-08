@@ -1,7 +1,7 @@
 <!-- # MRSPlotter -->
 
 
-[![DOI](https://img.shields.io/badge/DOI-1https://doi.org/10.5281/zenodo.17987686-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.17987686)
+[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.18186338-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.18186338)
 
 <h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="60" style="vertical-align: middle;"> MRSPlotter</h1>
 
