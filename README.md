@@ -17,6 +17,7 @@ This project is licensed under CC BY-NC-SA 4.0 Plus Custom Terms.
 - **NonCommercial**: Commercial use is not permitted
 - **ShareAlike**: Modifications must use the same license
 - **No Warranty**: Software is provided as-is
+
 See [LICENSE](LICENSE) for full details
  
 # Overview
