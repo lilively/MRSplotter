@@ -1,9 +1,9 @@
-<!-- # MRSPlotter -->
+<!-- # MRSplotter -->
 
 
 [![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.18186338-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.18186338)
 
-<h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="60" style="vertical-align: middle;"> MRSPlotter</h1>
+<h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="60" style="vertical-align: middle;"> MRSplotter</h1>
 
 <!-- <h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="150" style="vertical-align: middle;"> </h1> -->
 
@@ -22,15 +22,15 @@ See [LICENSE](LICENSE) for full details
  
 # Overview
 
-MRSPlotter is a specialized software tool designed for visualizing magnetic resonance spectroscopy data and generating publication-quality figures from various file formats. The application accommodates both single-voxel and multivoxel spectral data files. Users can view and edit the data and subsequently export it in CSV or standardized XML format. This workflow enables modifications, such as adding missing information, before using the files for plotting. MRSPlotter produces a range of plot types, including subplots and overlaid spectra, and exports figures suitable for both publication and presentation.
+MRSplotter is a specialized software tool designed for visualizing magnetic resonance spectroscopy data and generating publication-quality figures from various file formats. The application accommodates both single-voxel and multivoxel spectral data files. Users can view and edit the data and subsequently export it in CSV or standardized XML format. This workflow enables modifications, such as adding missing information, before using the files for plotting. MRSPlotter produces a range of plot types, including subplots and overlaid spectra, and exports figures suitable for both publication and presentation.
 
 *Full software documentation can be found [here](MRS%20Plotter%20Instructions.pdf).*
 
 ## Windows Installation
 
-Download the latest release from the GitHub releases page. Extract the contents of the ZIP file to a desired location on your computer. Navigate to the extracted folder and run `MRSPlotter.exe` to launch the application.
+Download the latest release from the GitHub releases page. Extract the contents of the ZIP file to a desired location on your computer. Navigate to the extracted folder and run `MRSplotter.exe` to launch the application.
 
-[![Download](https://img.shields.io/badge/Download_Latest_Release-383B96?style=for-the-badge)](https://github.com/lilively/MRSPlotter/releases/latest)
+[![Download](https://img.shields.io/badge/Download_Latest_Release-383B96?style=for-the-badge)](https://github.com/lilively/MRSplotter/releases/latest)
 
 
 ## Installation from Source
@@ -38,7 +38,7 @@ The software can also be run from source using Python. Ensure you have Python 3.
 
 Clone the repository from GitHub to your local machine:
 ```bash
-git clone https://github.com/lilively/MRSPlotter
+git clone https://github.com/lilively/MRSplotter
 ```
 Navigate to the project directory and run the main script:
 ```bash
