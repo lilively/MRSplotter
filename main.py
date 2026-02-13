@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt, QEvent, QSettings
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from combine_labels_dialog import CombineLabelDialog
+from source_labels_dialog import SourceLabelsDialog
 from color_dialog import ColorDelegate
 from navigation_toolbar import CustomNavigationToolbar
 
@@ -111,6 +112,8 @@ class MRSPlotter(QMainWindow):
 
         # Connect the combine labels button
         self.ui.combine_labels_btn.clicked.connect(self.show_combine_labels_dialog)
+        # Connect the source labels button
+        self.ui.source_labels_btn.clicked.connect(self.show_source_labels_dialog)
         # Connect the reset combinations button
         self.ui.reset_combinations_btn.clicked.connect(self.confirm_reset_labels)
 
@@ -529,6 +532,71 @@ class MRSPlotter(QMainWindow):
             # Process the combinations
             self.process_label_combinations(dialog.combinations)
 
+    def show_source_labels_dialog(self):
+        """Show dialog to load source labels from a contribution file"""
+        if not self.files_processed or self.dataTable is None:
+            self.ui.statusbar.showMessage("Please load and process files first", 3000)
+            return
+
+        dialog = SourceLabelsDialog(self)
+        if not dialog.exec():
+            return
+
+        lookup = dialog.winning_source_lookup
+        lookup_by = dialog.lookup_by
+
+        # Replace TissueType based on lookup
+        replaced = 0
+        if 'ID' not in self.dataTable.columns:
+            self.ui.statusbar.showMessage("No ID column found in loaded data", 3000)
+            return
+
+        if lookup_by == 'ID':
+            for idx, row in self.dataTable.iterrows():
+                voxel_id = str(row['ID'])
+                if voxel_id in lookup:
+                    self.dataTable.at[idx, 'TissueType'] = lookup[voxel_id]
+                    replaced += 1
+        elif lookup_by == 'ID_xy':
+            x_col = y_col = None
+            for candidate in ['x_pos', 'X_pos', 'Xpos', 'x']:
+                if candidate in self.dataTable.columns:
+                    x_col = candidate
+                    break
+            for candidate in ['y_pos', 'Y_pos', 'Ypos', 'y']:
+                if candidate in self.dataTable.columns:
+                    y_col = candidate
+                    break
+            if x_col is None or y_col is None:
+                self.ui.statusbar.showMessage("No x/y coordinate columns found in loaded data", 3000)
+                return
+            for idx, row in self.dataTable.iterrows():
+                voxel_id = str(row['ID'])
+                x = int(float(row[x_col]))
+                y = int(float(row[y_col]))
+                key = (voxel_id, x, y)
+                if key in lookup:
+                    self.dataTable.at[idx, 'TissueType'] = lookup[key]
+                    replaced += 1
+
+        # Update labels list and colors
+        self.ui.labels_found.clear()
+        tissue_types = sorted(self.dataTable['TissueType'].unique())
+        for i, label in enumerate(tissue_types):
+            item = QListWidgetItem(str(label))
+            if str(label) not in self.color_map:
+                self.color_map[str(label)] = self.get_random_color(i)
+            item.setData(Qt.ItemDataRole.UserRole, self.color_map[str(label)])
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.ui.labels_found.addItem(item)
+
+        if self.ui.labels_found.count() > 0:
+            self.ui.labels_found.item(0).setSelected(True)
+
+        self.filtered_dataTable = None
+        self.update_preview()
+        self.ui.statusbar.showMessage(f"Relabeled {replaced}/{len(self.dataTable)} voxels with source labels", 3000)
+
     def reset_label_combinations(self):
         """Reset any label combinations and restore original labels"""
         if not self.files_processed or self.dataTable is None:
@@ -945,7 +1013,7 @@ class MRSPlotter(QMainWindow):
             self.ui.plot_type.removeItem(multivoxel_index)
     
         # Add Multivoxel grid only if file type is multivoxel
-        if hasattr(self, 'filetype') and self.filetype == 'multi_voxel':
+        if hasattr(self, 'filetype') and self.filetype in ('multi_voxel', 'CSV_multi_voxel'):
             self.ui.plot_type.addItem('Multivoxel grid')
             self.ui.export_multivoxel_grid.setEnabled(True)
             self.ui.select_mean.setEnabled(True)

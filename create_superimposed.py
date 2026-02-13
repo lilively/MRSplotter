@@ -129,33 +129,35 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
         
         # Filter data for current tissue type
         filtered = dataTable[dataTable['TissueType'] == tissue_type]
-        cases_selected = filtered['ID'].values.tolist()
-        
-        # Skip if no cases found
-        if not cases_selected:
+        num_spectra = len(filtered)
+
+        # Skip if no data found
+        if num_spectra == 0:
             update_status(statusbar,f"No cases found for tissue type: {tissue_type}", 2000)
             continue
-        
+
+        # Get PPM columns sorted numerically
+        ppm_cols = sorted(
+            [col for col in filtered.columns if col.startswith('PPM_')],
+            key=lambda c: int(c.split('_')[1])
+        )
+
         # Prepare data for mean and standard deviation
         case_intensities = []
-        
-        # Plot individual cases or collect intensities
+
+        # Plot individual spectra (iterate per row to handle multivoxel IDs correctly)
         if plot_individual_plots:
-            for case in cases_selected:
-                case_intensity = filtered.loc[filtered['ID'] == str(case)]
-                case_intensity = case_intensity[[col for col in case_intensity.columns if col.startswith('PPM_')]]
-                case_intensity_array = case_intensity.to_numpy().flatten()
+            for i, (row_idx, row) in enumerate(filtered.iterrows()):
+                case_intensity_array = row[ppm_cols].values.astype(float)
                 case_intensities.append(case_intensity_array)
                 line, = ax.plot(
-                    xaxis, case_intensity_array, color=color_current, linewidth=1, clip_on=False,
-                    label=f"{tissue_type}" if case == cases_selected[0] and not (include_mean or include_sdev) else ""
+                    xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=1, clip_on=False,
+                    label=f"{tissue_type}" if i == 0 and not (include_mean or include_sdev) else ""
                 )
         else:
-            # If not plotting individual plots, still collect intensities for mean and std
-            for case in cases_selected:
-                case_intensity = filtered.loc[filtered['ID'] == str(case)]
-                case_intensity = case_intensity[[col for col in case_intensity.columns if col.startswith('PPM_')]]
-                case_intensity_array = case_intensity.to_numpy().flatten()
+            # Collect intensities for mean and std
+            for row_idx, row in filtered.iterrows():
+                case_intensity_array = row[ppm_cols].values.astype(float)
                 case_intensities.append(case_intensity_array)
         
         # Plot mean if requested
@@ -167,11 +169,11 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
                 # Use darker version of current color for mean when showing individual plots
                 mean_color = tuple(max(0, c * 0.5) for c in plt.cm.colors.to_rgb(color_current))
                 ax.plot(xaxis, mean_intensity, color=mean_color, linewidth=2,
-                    label=f"{tissue_type} (n={len(cases_selected)})", clip_on=False)
+                    label=f"{tissue_type} (n={num_spectra})", clip_on=False)
             else:
                 # Use the regular color when only showing mean
                 ax.plot(xaxis, mean_intensity, color=color_current, linewidth=2,
-                    label=f"{tissue_type} (n={len(cases_selected)})", clip_on=False)
+                    label=f"{tissue_type} (n={num_spectra})", clip_on=False)
             
             # Handle standard deviation with consistent coloring
             if include_sdev:

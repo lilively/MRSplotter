@@ -220,7 +220,7 @@ def read_structured_csv(file_path, ppm_range):
     validated_ppm_range = safe_ppm_range_check(ppm_range, xaxis)
     if ppm_range is not None and validated_ppm_range is None:
         print(f"Warning: PPM range validation failed for {ppm_range}")
-    
+
     return firstPPM, lastPPM, number_of_points, xaxis, data_table
 
 
@@ -273,7 +273,6 @@ def clean_dataframe(df):
         return df
     
     original_shape = df.shape
-    print(f"Cleaning DataFrame of shape {original_shape}")
     
     # First, check if we have Excel's "Column1", "Column2" headers that slipped through
     if df.columns[0].startswith('Column') and df.columns[0][6:].isdigit():
@@ -306,7 +305,7 @@ def clean_dataframe(df):
     
     if cols_to_keep:
         df = df[cols_to_keep]
-        print(f"Kept {len(cols_to_keep)} columns out of {original_shape[1]}")
+
     
     # Remove rows that are completely empty or contain only NaN/whitespace
     if not df.empty:
@@ -317,7 +316,7 @@ def clean_dataframe(df):
             axis=1
         )
         df = df[meaningful_rows]
-        print(f"Kept {len(df)} rows out of {original_shape[0]}")
+
     
     # Reset index after removing rows
     df = df.reset_index(drop=True)
@@ -329,13 +328,11 @@ def clean_dataframe(df):
         if possible_tissue_cols:
             # Rename the first match to TissueType
             df = df.rename(columns={possible_tissue_cols[0]: 'TissueType'})
-            print(f"Renamed column {possible_tissue_cols[0]} to TissueType")
         else:
             # Add a default TissueType column
             df['TissueType'] = 'Unknown'
-            print("Added default TissueType column")
-    
-    print(f"Final cleaned shape: {df.shape}")
+
+
     return df
 
 
@@ -411,7 +408,26 @@ def read_list_of_csv(file_paths, ppm_range, statusbar=None):
     else:
         dataTable = DataFrame()
    
+    # Normalize coordinate column names to match multi-voxel XML convention
+    col_renames = {}
+    for candidate in ['X_pos', 'Xpos']:
+        if candidate in dataTable.columns and 'x_pos' not in dataTable.columns:
+            col_renames[candidate] = 'x_pos'
+            break
+    for candidate in ['Y_pos', 'Ypos']:
+        if candidate in dataTable.columns and 'y_pos' not in dataTable.columns:
+            col_renames[candidate] = 'y_pos'
+            break
+    if col_renames:
+        dataTable.rename(columns=col_renames, inplace=True)
+
+    # Ensure all PPM columns are numeric (coerce non-numeric values to NaN)
+    if not dataTable.empty:
+        ppm_cols = [c for c in dataTable.columns if str(c).startswith('PPM_')]
+        for col in ppm_cols:
+            dataTable[col] = pd.to_numeric(dataTable[col], errors='coerce')
+
     if statusbar is not None:
         update_status(statusbar, f"{len(dfs)} CSV files processed", 3000)
-    
+
     return firstPPM, lastPPM, number_of_points, xaxis, dataTable

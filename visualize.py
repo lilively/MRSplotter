@@ -274,19 +274,25 @@ class Ui_svPlotter(object):
         self.combine_labels_btn.setObjectName("combine_labels_btn")
         self.combine_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 90px; max-width: 90px; }")
 
-        # Add a button to reset label combinations
-        self.reset_combinations_btn = QtWidgets.QPushButton("Reset Combinations")
+        # In the label_container layout,
+        self.source_labels_btn = QtWidgets.QPushButton("Load labels")
+        self.source_labels_btn.setObjectName("source_labels_btn")
+        self.source_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 90px; max-width: 90px; }")
+
+        # Add a button to reset label combinations (icon only, same as toolbar)
+        self.reset_combinations_btn = QtWidgets.QPushButton()
         self.reset_combinations_btn.setObjectName("reset_combinations_btn")
-        self.reset_combinations_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 120px; max-width: 120px; }")
+        self.reset_combinations_btn.setIcon(QIcon.fromTheme("view-refresh"))
+        self.reset_combinations_btn.setToolTip("Reset Combinations")
+        self.reset_combinations_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 28px; max-width: 28px; }")
 
-
-        # Create a horizontal layout for these buttons
+        # All buttons in one row, centered
         combine_buttons_layout = QtWidgets.QHBoxLayout()
+        combine_buttons_layout.addStretch(1)
         combine_buttons_layout.addWidget(self.combine_labels_btn)
-        combine_buttons_layout.addStretch(1) 
+        combine_buttons_layout.addWidget(self.source_labels_btn)
         combine_buttons_layout.addWidget(self.reset_combinations_btn)
-
-
+        combine_buttons_layout.addStretch(1)
 
         # Add the button layout to the label container
         self.label_container.addLayout(combine_buttons_layout)

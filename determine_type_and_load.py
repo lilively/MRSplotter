@@ -21,7 +21,8 @@ def determine_filetype(filepath_list):
             for grid in grid_elements:
                 voxels = grid.findall('.//Voxel[@Xaxis]')
                 if len(voxels) > 1:
-                    return 'multi_voxel'  
+                    return 'multi_voxel'
+                
                 else:
                     return 'jMRUI2XML'
         
@@ -42,6 +43,21 @@ def determine_filetype(filepath_list):
         file_extension = path.splitext(filepath)[1].lower()
         
         if file_extension == '.csv':
+            # Check if CSV has x/y coordinate columns (multi-voxel data)
+            try:
+                with open(filepath, 'r', encoding='utf-8-sig') as csv_f:
+                    for line in csv_f:
+                        stripped = line.strip()
+                        if stripped.startswith('#') or not stripped:
+                            continue
+                        header_lower = stripped.lower()
+                        has_x = any(col in header_lower for col in ['x_pos', 'xpos'])
+                        has_y = any(col in header_lower for col in ['y_pos', 'ypos'])
+                        if has_x and has_y:
+                            return "CSV_multi_voxel"
+                        break
+            except Exception:
+                pass
             return "CSV_file"
         elif file_extension == '.txt':
             try:
@@ -84,7 +100,7 @@ def read_files(filepath_list, ppm_range,  statusbar=None):
         firstPPM, lastPPM, number_of_points, xaxis, dataTable = read_list_of_jmrui_text(file_paths=filepath_list,
                                                                                         ppm_range=ppm_range,
                                                                                         statusbar= None)
-    elif filetype == 'CSV_file':
+    elif filetype in ('CSV_file', 'CSV_multi_voxel'):
         firstPPM, lastPPM, number_of_points, xaxis, dataTable = read_list_of_csv(file_paths=filepath_list,
                                                                                         ppm_range=ppm_range,
                                                                                         statusbar= None)

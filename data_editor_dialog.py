@@ -372,49 +372,51 @@ class DataEditorDialog(QDialog):
                 
                 case_count = 0
                 
-                # Process each unique ID as a separate Case
+                # Process each row as a separate Case (handles MV data with multiple voxels per ID)
                 if 'ID' in current_data.columns:
-                    unique_ids = current_data['ID'].unique()
-                    print(f"Processing {len(unique_ids)} unique IDs as Cases...")
-                    
-                    for unique_id in unique_ids:
-                        # Get all rows for this ID (should typically be just 1 row)
-                        id_rows = current_data[current_data['ID'] == unique_id]
-                        
-                        if len(id_rows) > 1:
-                            print(f"Warning: ID '{unique_id}' has {len(id_rows)} rows. Using first row only.")
-                        
-                        # Use the first (or only) row for this ID
-                        row = id_rows.iloc[0]
-                        
+                    has_positions = 'x_pos' in current_data.columns and 'y_pos' in current_data.columns
+
+                    for _, row in current_data.iterrows():
+                        unique_id = str(row['ID'])
+
+                        case_id = unique_id
+
+                        if has_positions:
+                            x = int(round(float(row['x_pos'])))
+                            y = int(round(float(row['y_pos'])))
+
                         # Create Case element
                         case = ET.SubElement(root, "Case")
-                        case.set("ID", str(unique_id))
-                        
+                        case.set("ID", case_id)
+
                         # Add Tissue element
                         tissue = ET.SubElement(case, "Tissue")
                         tissue.set("Type", str(row.get('TissueType', 'Unknown')))
                         tissue.text = ""  # Prevent self-closing
-                        
+
                         # Add Spectrum element
                         spectrum = ET.SubElement(case, "Spectrum")
-                        spectrum.set("Name", str(unique_id))  # Use ID as spectrum name
-                        
-                        
-                        
+                        spectrum.set("Name", case_id)
+                        #spectrum.set("Name",  f"{unique_id}_X_{x}_Y_{y}")
+
                         # Add Parameters element
                         parameters = ET.SubElement(spectrum, "Parameters")
                         parameters.set("FirstPPM", str(first_ppm))
                         parameters.set("LastPPM", str(last_ppm))
                         parameters.set("PointsNumber", str(number_of_points))
-                        
+
+                        # Add optional X and Y if available
+                        if has_positions:
+                            parameters.set("Xaxis", str(int(x)))
+                            parameters.set("Yaxis", str(int(y)))
+
                         # Add optional SNR if available
                         if 'SNR' in row:
                             parameters.set("SNR", str(row['SNR']))
 
                         # Add Points element with spectral data
                         points = ET.SubElement(spectrum, "Points")
-                        
+
                         # Extract spectral data for this row
                         spectral_data = []
                         for col in ppm_cols:
@@ -423,7 +425,7 @@ class DataEditorDialog(QDialog):
                                 spectral_data.append('0.0')
                             else:
                                 spectral_data.append(str(float(val)))
-                        
+
                         points.text = ' '.join(spectral_data)
                         case_count += 1
                         

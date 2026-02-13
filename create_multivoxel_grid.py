@@ -13,19 +13,31 @@ from os import path
 
 
 
-def get_row_data(dataTable, x_pos, y_pos, case_id):
+def get_row_data(dataTable, x_pos, y_pos, case_id, id_mode='xml'):
     """Get intensity data for specific x,y position"""
-    mask = (dataTable['x_pos'] == str(x_pos)) & (dataTable['y_pos'] == str(y_pos)) & (dataTable['ID'].str.startswith(case_id + '_X_'))
+    x_match = dataTable['x_pos'].astype(float).astype(int) == int(x_pos)
+    y_match = dataTable['y_pos'].astype(float).astype(int) == int(y_pos)
+    if case_id is not None:
+        if id_mode == 'xml':
+            id_match = dataTable['ID'].str.startswith(case_id + '_X_')
+        else:
+            id_match = dataTable['ID'] == case_id
+        mask = x_match & y_match & id_match
+    else:
+        mask = x_match & y_match
     filtered_data = dataTable[mask]
-    
+
     if filtered_data.empty:
-        return None, None 
+        return None, None
     
-    # Get PPM columns (intensity data)
-    ppm_columns = [col for col in filtered_data.columns if col.startswith('PPM_')]
+    # Get PPM columns (intensity data), sorted numerically
+    ppm_columns = sorted(
+        [col for col in filtered_data.columns if col.startswith('PPM_')],
+        key=lambda c: int(c.split('_')[1])
+    )
     if not ppm_columns:
         return None, None
-        
+
     # Get the first row's intensity data
     intensity_data = filtered_data[ppm_columns].iloc[0].values
     tissue_type = filtered_data['TissueType'].iloc[0]
@@ -115,16 +127,27 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
     exported_count = 0
 
     all_tissue_types = sorted(dataTable['TissueType'].unique())
-    case_ids = dataTable['ID'].str.extract(r'^(.+?)_X_').iloc[:, 0].unique().tolist()
+
+    # Extract case IDs: XML IDs have format "caseID_X_{x}_Y_{y}", CSV IDs may not
+    extracted = dataTable['ID'].str.extract(r'^(.+?)_X_')
+    has_xml_ids = extracted.iloc[:, 0].notna().any()
+    if has_xml_ids:
+        case_ids = extracted.iloc[:, 0].dropna().unique().tolist()
+        id_mode = 'xml'
+    else:
+        case_ids = [c for c in dataTable['ID'].unique() if notna(c)]
+        id_mode = 'csv'
 
     for case in case_ids:
         if fig is None:
             fig = plt.figure(figsize=figsize)
         else:
             fig.clear()
-        filename = case  
-        #fig.suptitle(filename, fontweight='bold', fontsize=12)
-        if legend_visible:
+        filename = str(case) if case is not None else 'multivoxel'
+        # Sanitize for filesystem
+        for ch in '<>:"/\\|?*':
+            filename = filename.replace(ch, '_')
+        if legend_visible and filename != 'multivoxel':
             fig.suptitle(filename, fontweight='bold', fontsize=12, y=0.98)
 
         # Create grid layout
@@ -138,7 +161,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
 
                 
                 # Get intensity data for this position
-                result = get_row_data(dataTable, x_pos, y_pos, case)
+                result = get_row_data(dataTable, x_pos, y_pos, case, id_mode)
                 if result[0] is not None:  
                     intensity_data, tissue_type = result
                 else:
@@ -166,8 +189,8 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                         x_al, y_al = 0.05, 0.85
                         LW=0.9
 
-                    # Plot the spectrum
-                    ax.plot(xaxis, intensity_data, color=color_current, linewidth=LW)
+                    # Plot the spectrum (limit to xaxis length in case of column mismatch)
+                    ax.plot(xaxis, intensity_data[:len(xaxis)], color=color_current, linewidth=LW)
                     apply_common_plot_settingsMV(global_minIntensity, global_maxIntensity, ppm_range, legend_visible=legend_visible, ax=ax)
 
                     # Add coordinate label
@@ -214,7 +237,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 # Ensure directory exists
                 makedirs(output_directory, exist_ok=True)
                 # Define output path
-                filename = f"{case}_{fileending}grid.png"
+                filename = f"{filename}_{fileending}grid.png"
                 outPath = path.join(output_directory, filename)
                 
                 # Save the figure
@@ -249,14 +272,23 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
         return
     
     # Get all unique case IDs from the loaded data
-    case_ids = dataTable['ID'].str.extract(r'^(.+?)_X_').iloc[:, 0].unique()
-    case_ids = [c for c in case_ids if notna(c)]
-    
-    
+    extracted = dataTable['ID'].str.extract(r'^(.+?)_X_')
+    has_xml_ids = extracted.iloc[:, 0].notna().any()
+    if has_xml_ids:
+        case_ids = [c for c in extracted.iloc[:, 0].unique() if notna(c)]
+        id_mode = 'xml'
+    else:
+        # CSV: each unique ID is one case
+        case_ids = [c for c in dataTable['ID'].unique() if notna(c)]
+        id_mode = 'csv'
+
     for case_id in case_ids:
         try:
             # Filter data for this specific case
-            case_data = dataTable[dataTable['ID'].str.startswith(case_id + '_X_')].copy()
+            if id_mode == 'xml':
+                case_data = dataTable[dataTable['ID'].str.startswith(case_id + '_X_')].copy()
+            else:
+                case_data = dataTable[dataTable['ID'] == case_id].copy()
             
             if case_data.empty:
                 continue
@@ -286,11 +318,11 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
                 plt.close(fig)
                 
             if statusbar:
-                update_status(statusbar,f"Saving results of {case_id} to {output_directory}", 5000)
-                
+                update_status(statusbar,f"Saving results of {case_id or 'multivoxel'} to {output_directory}", 5000)
+
         except Exception as e:
             if statusbar:
-                update_status(statusbar, f"Error exporting {case_id}: {str(e)}", 3000)
+                update_status(statusbar, f"Error exporting {case_id or 'multivoxel'}: {str(e)}", 3000)
     
 
 

@@ -26,7 +26,6 @@ class CombineLabelDialog(QDialog):
         num_classes_layout.addWidget(num_classes_label)
         num_classes_layout.addWidget(self.num_classes_spin)
         
-        # Add reset button
         self.reset_btn = QPushButton("Reset")
         self.reset_btn.clicked.connect(self.reset_dialog)
         num_classes_layout.addWidget(self.reset_btn)
@@ -34,20 +33,18 @@ class CombineLabelDialog(QDialog):
         num_classes_layout.addStretch()
         layout.addLayout(num_classes_layout)
         
-        # Class container
         self.class_container = QWidget()
         self.class_layout = QGridLayout(self.class_container)
         
-        # Initialize class list widgets
         self.class_lists = []
         self.class_names = []
         
-        # Create initial class widgets
+
         self.update_class_widgets(self.num_classes_spin.value())
         
         layout.addWidget(self.class_container)
         
-        # Buttons
+
         button_box = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | 
             QDialogButtonBox.StandardButton.Cancel
@@ -78,27 +75,26 @@ class CombineLabelDialog(QDialog):
         
         # Create new widgets for each class
         for i in range(num_classes):
-            # Class header
+
             class_label = QLabel(f"Class {i+1}:")
             self.class_layout.addWidget(class_label, i, 0)
             
-            # Class name input
+
             class_name = QLineEdit()
             class_name.setPlaceholderText(f"Class {i+1} name")
             self.class_names.append(class_name)
             self.class_layout.addWidget(class_name, i, 1)
             
-            # Class list
+
             class_list = QListWidget()
             class_list.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
-            # Add all available labels
+
             for label in self.labels:
                 class_list.addItem(label)
             self.class_lists.append(class_list)
             self.class_layout.addWidget(class_list, i, 2)
     
     def accept(self):
-        # Collect the class combinations
         self.combinations = {}
         for i, class_list in enumerate(self.class_lists):
             class_name = self.class_names[i].text() or f"Class {i+1}"

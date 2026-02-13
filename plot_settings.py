@@ -177,12 +177,10 @@ def calculate_grid_dimensions(num_plots):
         return 3, 2  # 3 columns, 2 rows 
    
     # For other cases, calculate dimensions
-    # Limit to at most 3 columns
     cols = min(ceil(sqrt(num_plots)), 3)
     rows = ceil(num_plots / cols)
    
     return cols, rows
-
 
 
 
