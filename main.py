@@ -1302,7 +1302,7 @@ class MRSPlotter(QMainWindow):
         if export_displayed or export_each_subplot:
             try:
                 # Create a separate figure for export
-                export_fig = plt.figure(figsize=(10, 8))
+                export_fig = plt.figure(figsize=(10, 6))
                 
                 if plot_type == "Subplot":
                     create_subplot(

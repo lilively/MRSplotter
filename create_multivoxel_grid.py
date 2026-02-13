@@ -1,7 +1,7 @@
 
 
 from plot_settings import add_vertical_line_with_text, apply_common_plot_settingsMV
-from aspect_ratio import calculate_figure_size
+
 from matplotlib import path, pyplot as plt
 from matplotlib.gridspec import GridSpec
 from determine_type_and_load import read_files
@@ -131,7 +131,14 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         height_inches = canvas_height / dpi
         figsize = (width_inches, height_inches)
     else:
-        figsize = calculate_figure_size(dataTable, canvas_width, canvas_height, dpi, base_size=12)
+        # Use grid dimensions (xlen/ylen) for aspect ratio so all cases
+        # produce the same figure size regardless of which cells have data
+        base_size = 12
+        aspect_ratio = xlen / ylen
+        if aspect_ratio >= 1:
+            figsize = (base_size, base_size / aspect_ratio)
+        else:
+            figsize = (base_size * aspect_ratio, base_size)
     
     # Track if exported any figures
     exported_count = 0
@@ -259,7 +266,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 outPath = path.join(output_directory, filename)
                 
                 # Save the figure
-                fig.savefig(outPath, dpi=dpi)
+                fig.savefig(outPath, dpi=dpi, bbox_inches='tight', pad_inches=0)
 
                 # Update status bar if available
                 if statusbar:

@@ -164,7 +164,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
             for row_idx, row in filtered.iterrows():
                 case_intensity_array = row[ppm_cols].values.astype(float)
                 case_intensities.append(case_intensity_array)
-                ax.plot(xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=1, clip_on=False)
+                ax.plot(xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=1, clip_on=True)
         else:
             # Collect intensities for mean and std
             for row_idx, row in filtered.iterrows():
@@ -183,7 +183,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
                 mean_color = color_current
        
             # Plot mean line
-            ax.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=False)
+            ax.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=True)
 
             # Plot standard deviation if requested
             if include_sdev:
@@ -238,15 +238,15 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
 
                 outPath_subplot = path.join(output_directory, subplot_filename)
                 
-                # Create new figure with larger dimensions for the individual plot
-                fig_single = plt.figure(figsize=(14, 7))
+                # Create new figure for the individual plot
+                fig_single = plt.figure(figsize=(10, 6))
                 ax_single = fig_single.add_subplot(111)
                 
                 # Plot the exact same data as in the main subplot
                 # Plot individual cases if enabled
                 if plot_individual_plots:
                     for case_intensity_array in case_intensities:
-                        ax_single.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, alpha=0.5, clip_on=False)
+                        ax_single.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, alpha=0.5, clip_on=True)
                 
                 # Plot mean and standard deviation if requested
                 if include_mean and case_intensities:
@@ -259,7 +259,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
                         mean_color = color_current
                     
                     # Plot mean line
-                    ax_single.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=False)
+                    ax_single.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=True)
                     
                     # Plot standard deviation if requested
                     if include_sdev:

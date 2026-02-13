@@ -54,7 +54,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
         figsize = (width_inches, height_inches)
     else:
         # Use default size for a single plot
-        figsize = (8, 6)
+        figsize = (10, 6)
     
     # Track if we exported any figures
     exported_count = 0
@@ -107,7 +107,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
             case_intensity_array = row[ppm_cols].values.astype(float)
 
             ax.plot(
-                xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=2, clip_on=False,
+                xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=2, clip_on=True,
                 label=f"{tissue_type}"
             )
 

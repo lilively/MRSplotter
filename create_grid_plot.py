@@ -137,7 +137,7 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                         case_intensity = case_intensity[[col for col in case_intensity.columns if col.startswith('PPM_')]]
                         case_intensity_array = case_intensity.to_numpy().flatten()
                         case_intensities.append(case_intensity_array)
-                        ax.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, clip_on=False)
+                        ax.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, clip_on=True)
                 else:
                     # If not plotting individual plots, still collect intensities for mean and std
                     for case in cases_selected:
@@ -159,7 +159,7 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                         mean_color = color_current
                     
                     # Plot mean line
-                    ax.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=False)
+                    ax.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=True)
                     
                     # Plot standard deviation if requested
                     if include_sdev:
@@ -212,13 +212,13 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                         outPath_subplot = path.join(output_directory, subplot_filename)
                         
                         # Create new figure with larger dimensions for the individual plot
-                        fig_single = plt.figure(figsize=(12, 10))
+                        fig_single = plt.figure(figsize=(10, 6))
                         ax_single = fig_single.add_subplot(111)
                         
                         # Plot the exact same data as in the main subplot
                         if plot_individual_plots:
                             for case_intensity_array in case_intensities:
-                                ax_single.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, clip_on=False)
+                                ax_single.plot(xaxis, case_intensity_array, color=color_current, linewidth=1, clip_on=True)
                         
                         if include_mean and case_intensities:
                             mean_intensity = mean(case_intensities, axis=0)
@@ -231,7 +231,7 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                                 mean_color = color_current
                             
                             # Plot mean line
-                            ax_single.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=False)
+                            ax_single.plot(xaxis, mean_intensity, color=mean_color, linewidth=2, label='Mean', clip_on=True)
                             
                             # Plot standard deviation if requested
                             if include_sdev:
