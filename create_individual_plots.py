@@ -70,69 +70,84 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
         
         # Filter data for current tissue type
         filtered = dataTable[dataTable['TissueType'] == tissue_type]
-        cases_selected = filtered['ID'].unique().tolist()  # Use unique() to avoid duplicates
-        
+
+        # Get PPM columns
+        ppm_cols = sorted(
+            [col for col in filtered.columns if col.startswith('PPM_')],
+            key=lambda c: int(c.split('_')[1])
+        )
+
+        # Determine file ending based on options
+        fileending = ''
+        if add_vertical_lines:
+            fileending = 'vertical'
+        elif not legend_visible:
+            fileending = 'legend'
+
         if statusbar:
-            statusbar.showMessage(f"Processing {len(cases_selected)} cases for tissue type: {tissue_type}", 2000)
-        
-        for case in cases_selected:
-            # Create a new figure for each case
+            statusbar.showMessage(f"Processing {len(filtered)} spectra for tissue type: {tissue_type}", 2000)
+
+        # Iterate per row so each voxel gets its own plot
+        for row_idx, row in filtered.iterrows():
+            case_id = row['ID']
+
+            # Build a unique label for the plot title and filename
+            has_xy = 'x_pos' in filtered.columns and 'y_pos' in filtered.columns
+            if has_xy:
+                x_pos = row['x_pos']
+                y_pos = row['y_pos']
+                plot_label = f"{case_id}_X{x_pos}_Y{y_pos}"
+            else:
+                plot_label = str(case_id)
+
+            # Create a new figure for each spectrum
             fig = plt.figure(figsize=figsize, dpi=dpi)
             ax = fig.add_subplot(111)
-            
-            case_intensity = filtered.loc[filtered['ID'] == str(case)]
-            case_intensity = case_intensity[[col for col in case_intensity.columns if col.startswith('PPM_')]]
-            #case_intensity = case_intensity.iloc[:, 4:]
-            case_intensity_array = case_intensity.to_numpy().flatten()
-            
-            line, = ax.plot(
-                xaxis, case_intensity_array, color=color_current, linewidth=2, clip_on=False,
+
+            case_intensity_array = row[ppm_cols].values.astype(float)
+
+            ax.plot(
+                xaxis, case_intensity_array[:len(xaxis)], color=color_current, linewidth=2, clip_on=False,
                 label=f"{tissue_type}"
             )
 
             ax.legend(loc='best')
-            
-            
+
             # Add vertical reference lines if requested
             if add_vertical_lines:
                 for i, item in enumerate(ppm_list_vertical):
                     add_vertical_line_with_text(ax, item, float(global_maxIntensity), str(item))
-                    fileending = 'vertical'
-            elif not legend_visible:
-                fileending ='legend'
-            else:
-                fileending=''
+
             # Add title
-            ax.set_title(f'{case} - {tissue_type}')
-            
+            ax.set_title(f'{plot_label} - {tissue_type}')
+
             apply_common_plot_settings(global_minIntensity, global_maxIntensity, ppm_range, legend_visible, ax=ax)
-            
+
             # Adjust layout
             plt.tight_layout()
-            
+
             # Save figure if requested
             if output_directory and export_figure:
-                # Join with underscores and add extension
                 from conflict_handling import sanitize_filename
                 sanitized_tissue = sanitize_filename(tissue_type)
-                filename = f"{case}_{sanitized_tissue}_{fileending}.png"
+                sanitized_label = sanitize_filename(plot_label)
+                filename = f"{sanitized_label}_{sanitized_tissue}_{fileending}.png"
                 outPath = path.join(output_directory, filename)
                 try:
                     plt.savefig(outPath, dpi=dpi)
-                    
-                    # Update status bar if available
+
                     if statusbar:
                         update_status(statusbar,f"Saving results as {filename} to {output_directory}", 5000)
                     else:
                         print(f'Saving results as {filename} to {output_directory}')
-                        
+
                     exported_count += 1
                 except Exception as e:
                     if statusbar:
                         update_status(statusbar,f"Error saving {filename}...", 5000)
                     else:
                         print(f"Error saving {filename}: {str(e)}")
-            
+
             # Close the figure to free memory
             plt.close(fig)
     

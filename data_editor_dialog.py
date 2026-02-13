@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QAction, QShortcut
 from table_model import TableModel
+from conflict_handling import sort_numbers
 
 
 
@@ -68,7 +69,7 @@ class DataEditorDialog(QDialog):
         self.label_combo = QComboBox()
         self.label_combo.addItem("All")
         if 'TissueType' in self.df.columns:
-            for label in sorted(self.df['TissueType'].unique()):
+            for label in sorted(self.df['TissueType'].unique(), key=sort_numbers):
                 self.label_combo.addItem(str(label))
         self.label_combo.currentTextChanged.connect(self.apply_filter)
         filter_layout.addWidget(self.label_combo)

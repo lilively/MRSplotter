@@ -21,8 +21,7 @@ def determine_filetype(filepath_list):
             for grid in grid_elements:
                 voxels = grid.findall('.//Voxel[@Xaxis]')
                 if len(voxels) > 1:
-                    return 'multi_voxel'
-                
+                    return 'multi_voxel'              
                 else:
                     return 'jMRUI2XML'
         

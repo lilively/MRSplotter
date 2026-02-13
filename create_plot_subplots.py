@@ -2,7 +2,7 @@ from status import update_status
 import matplotlib.pyplot as plt
 from numpy import mean, std
 from os import path, makedirs
-from conflict_handling import sanitize_filename
+from conflict_handling import sanitize_filename, sort_numbers
 from plot_settings import add_vertical_line_with_text, apply_common_plot_settings, calculate_grid_dimensions
 def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sdev, 
                    plot_individual_plots, add_vertical_lines, ppm_list_vertical, selected_color, ppm_range, 
@@ -37,7 +37,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
 
 
     # Get the tissue types from the data table
-    all_tissue_types = sorted(dataTable['TissueType'].unique())
+    all_tissue_types = sorted(dataTable['TissueType'].unique(), key=sort_numbers)
     
     # Filter to only include tissue types that have a color in the selected_color dictionary
     if isinstance(selected_color, dict):

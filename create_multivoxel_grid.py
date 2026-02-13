@@ -7,6 +7,7 @@ from matplotlib.gridspec import GridSpec
 from determine_type_and_load import read_files
 from os import path, makedirs, listdir
 from status import update_status
+from conflict_handling import sort_numbers
 from numpy import isnan
 from pandas import notna
 from os import path
@@ -46,11 +47,12 @@ def get_row_data(dataTable, x_pos, y_pos, case_id, id_mode='xml'):
 
 
 
-def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, include_sdev, 
-                   plot_individual_plots, add_vertical_lines, ppm_list_vertical, selected_color, ppm_range, 
-                   y_limits=None, export_figure=False, save_subplot=False, canvas_width=None, 
+def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, include_sdev,
+                   plot_individual_plots, add_vertical_lines, ppm_list_vertical, selected_color, ppm_range,
+                   y_limits=None, export_figure=False, save_subplot=False, canvas_width=None,
                    canvas_height=None, dpi=None, statusbar=None, fig=None,  legend_visible=False,
-                   use_auto_grid=True, grid_rows=2, grid_cols=2):
+                   use_auto_grid=True, grid_rows=2, grid_cols=2,
+                   global_x_range=None, global_y_range=None):
     """
     Create a multivoxel grid plot similar to the MATLAB tiledlayout
     
@@ -92,15 +94,23 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         return fig
         
 
-    x_values = sorted([int(float(x)) for x in dataTable['x_pos'].unique()])
-    y_values = sorted([int(float(y)) for y in dataTable['y_pos'].unique()])
-    xlen = len(x_values)
-    ylen = len(y_values)
+    # Use global ranges if provided (for consistent grid sizes across cases),
+    # otherwise derive from this case's data
+    if global_x_range is not None:
+        xmin, xmax = global_x_range
+    else:
+        x_values = sorted([int(float(x)) for x in dataTable['x_pos'].unique()])
+        xmin, xmax = min(x_values), max(x_values)
+
+    if global_y_range is not None:
+        ymin, ymax = global_y_range
+    else:
+        y_values = sorted([int(float(y)) for y in dataTable['y_pos'].unique()])
+        ymin, ymax = min(y_values), max(y_values)
+
+    xlen = xmax - xmin + 1
+    ylen = ymax - ymin + 1
     n = xlen * ylen
-    
-    # Get min/max for range - convert to integers
-    xmin, xmax = min(x_values), max(x_values)
-    ymin, ymax = min(y_values), max(y_values)
 
     if y_limits is None:
         from global_intensities import calculate_y_limit
@@ -126,7 +136,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
     # Track if exported any figures
     exported_count = 0
 
-    all_tissue_types = sorted(dataTable['TissueType'].unique())
+    all_tissue_types = sorted(dataTable['TissueType'].unique(), key=sort_numbers)
 
     # Extract case IDs: XML IDs have format "caseID_X_{x}_Y_{y}", CSV IDs may not
     extracted = dataTable['ID'].str.extract(r'^(.+?)_X_')
@@ -150,6 +160,12 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         if legend_visible and filename != 'multivoxel':
             fig.suptitle(filename, fontweight='bold', fontsize=12, y=0.98)
 
+        # Grab one valid spectrum to use as invisible placeholder in empty cells
+        ppm_columns = sorted(
+            [col for col in dataTable.columns if col.startswith('PPM_')],
+            key=lambda c: int(c.split('_')[1])
+        )
+    
         # Create grid layout
         gs = GridSpec(ylen, xlen, figure=fig, hspace=0.0, wspace=0.0)
         fig.subplots_adjust(top=0.95)
@@ -175,7 +191,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                         color_current = "#000000"
                     
                     # Adjust font size and label position based on total subplots
-                    total_subplots = len(x_values) * len(y_values)                     
+                    total_subplots = xlen * ylen
                     if total_subplots > 16:
                         font_size = 6
                         x_al, y_al = 0.02, 0.98
@@ -215,14 +231,16 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                     # ax.text(0.05, 0.85, coord_label, transform=ax.transAxes, 
                     #     verticalalignment='bottom', fontweight='bold', fontsize=8)
                 else:
-                    # Empty plot for missing/invalid data
-                    ax.text(0.5, 0.5, 'No Data', transform=ax.transAxes, 
+                    # Empty cell — apply same axis limits for consistent sizing
+                    
+                    #ax.plot(xaxis, xaxis, color="#FFFFFF")
+                    apply_common_plot_settingsMV(global_minIntensity, global_maxIntensity, ppm_range, legend_visible=legend_visible, ax=ax)
+                    ax.text(0.5, 0.5, 'No Data', transform=ax.transAxes,
                         horizontalalignment='center', verticalalignment='center',
                         fontsize=10, alpha=0.5)
-                    
                     coord_label = f"{x_pos}-{y_pos}"
-                    ax.text(0.05, 0.85, coord_label, transform=ax.transAxes, 
-                        verticalalignment='bottom', fontweight='bold', 
+                    ax.text(0.05, 0.85, coord_label, transform=ax.transAxes,
+                        verticalalignment='bottom', fontweight='bold',
                         fontsize=8, alpha=0.5)
                 # Set axis properties
                 ax.set_xticks([])
@@ -241,7 +259,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 outPath = path.join(output_directory, filename)
                 
                 # Save the figure
-                fig.savefig(outPath, dpi=dpi, bbox_inches='tight', pad_inches=0)
+                fig.savefig(outPath, dpi=dpi)
 
                 # Update status bar if available
                 if statusbar:
@@ -271,6 +289,12 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
             update_status(statusbar, "Data is not suitable for multivoxel grid export", 3000)
         return
     
+    # Compute global x/y range across ALL cases for consistent grid sizes
+    all_x = [int(float(x)) for x in dataTable['x_pos'].unique()]
+    all_y = [int(float(y)) for y in dataTable['y_pos'].unique()]
+    global_x_range = (min(all_x), max(all_x))
+    global_y_range = (min(all_y), max(all_y))
+
     # Get all unique case IDs from the loaded data
     extracted = dataTable['ID'].str.extract(r'^(.+?)_X_')
     has_xml_ids = extracted.iloc[:, 0].notna().any()
@@ -289,28 +313,30 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
                 case_data = dataTable[dataTable['ID'].str.startswith(case_id + '_X_')].copy()
             else:
                 case_data = dataTable[dataTable['ID'] == case_id].copy()
-            
+
             if case_data.empty:
                 continue
-                
-            # Create the plot for this case
+
+            # Create the plot for this case with global grid dimensions
             fig = create_multivoxel_plot(
-                output_directory=output_directory, 
+                output_directory=output_directory,
                 xaxis=xaxis,
                 dataTable=case_data,
-                include_mean=include_mean, 
+                include_mean=include_mean,
                 include_sdev=include_sdev,
-                plot_individual_plots=plot_individual_plots, 
-                add_vertical_lines=add_vertical_lines, 
-                ppm_list_vertical=ppm_list_vertical, 
-                selected_color=selected_color, 
+                plot_individual_plots=plot_individual_plots,
+                add_vertical_lines=add_vertical_lines,
+                ppm_list_vertical=ppm_list_vertical,
+                selected_color=selected_color,
                 ppm_range=ppm_range,
-                y_limits=y_limits, 
-                export_figure=export_figure, 
-                dpi=dpi, 
+                y_limits=y_limits,
+                export_figure=export_figure,
+                dpi=dpi,
                 statusbar=statusbar,
                 legend_visible=legend_visible,
-                fig=None 
+                fig=None,
+                global_x_range=global_x_range,
+                global_y_range=global_y_range
             )
             
             # Close the figure to free memory

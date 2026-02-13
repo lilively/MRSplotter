@@ -1,4 +1,16 @@
-from re import sub
+from re import sub, split as re_split
+
+
+def sort_numbers(s):
+    """Sort key that handles embedded numbers naturally.
+    'Source 2' comes before 'Source 10', '***' is always last."""
+    s = str(s)
+    if s == '***':
+        return (1,)
+    return (0,) + tuple(
+        int(part) if part.isdigit() else part.casefold()
+        for part in re_split(r'(\d+)', s)
+    )
 
 
 def sanitize_filename(name):

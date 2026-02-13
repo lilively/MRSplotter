@@ -86,15 +86,19 @@ def readXML_SpectraClassifier(ppm_range, filepath, output_directory=None,  statu
             
 
 
+            params = case.find('.//Parameters')
             voxel_data = {
             'ID' : case.get('ID'),
             'TissueType':case.find('Tissue').get('Type'),
-            #'Dataset': case.find('Spectrum').get('Name'),
             }
 
-            snr_param = case.find('.//Parameters')
-            if snr_param is not None and snr_param.get('SNR') is not None:
-                voxel_data['SNR'] = float(snr_param.get('SNR'))
+            # Extract X/Y coordinates if present (multivoxel data)
+            if params is not None:
+                if params.get('Xaxis') is not None and params.get('Yaxis') is not None:
+                    voxel_data['x_pos'] = params.get('Xaxis')
+                    voxel_data['y_pos'] = params.get('Yaxis')
+                if params.get('SNR') is not None:
+                    voxel_data['SNR'] = float(params.get('SNR'))
 
             voxel_data.update({'PPM_{}'.format(i): points_filtered[i] for i in range(len(points_filtered))})
             

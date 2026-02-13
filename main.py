@@ -22,11 +22,8 @@ from create_plot_subplots import create_subplot
 from create_superimposed import create_superimposed
 from create_individual_plots import create_individual_plots
 from global_intensities import calculate_y_limit
-from conflict_handling import validate_ppm_range
+from conflict_handling import validate_ppm_range, sort_numbers
 from create_multivoxel_grid import create_multivoxel_plot, export_mv_grid
-
-
-
 
 
 class MRSPlotter(QMainWindow):
@@ -359,9 +356,9 @@ class MRSPlotter(QMainWindow):
             if 'TissueType' in self.dataTable.columns:
                 # Get unique tissue types and sort them
                 tissue_types = sorted(
-                    [str(label) for label in self.dataTable['TissueType'].unique() 
-                    if notna(label) and str(label).strip()], 
-                    key=lambda x: (x == '***', x)
+                    [str(label) for label in self.dataTable['TissueType'].unique()
+                    if notna(label) and str(label).strip()],
+                    key=sort_numbers
                 )
                 
                 # Clear existing labels
@@ -423,7 +420,7 @@ class MRSPlotter(QMainWindow):
     def update_labels_and_colors(self, dataframe):
         """Update labels while preserving existing color mappings"""
         # Get current unique tissue types
-        current_tissue_types = sorted(dataframe['TissueType'].unique())
+        current_tissue_types = sorted(dataframe['TissueType'].unique(), key=sort_numbers)
         
         # Clear existing labels
         self.ui.labels_found.clear()
@@ -581,7 +578,7 @@ class MRSPlotter(QMainWindow):
 
         # Update labels list and colors
         self.ui.labels_found.clear()
-        tissue_types = sorted(self.dataTable['TissueType'].unique())
+        tissue_types = sorted(self.dataTable['TissueType'].unique(), key=sort_numbers)
         for i, label in enumerate(tissue_types):
             item = QListWidgetItem(str(label))
             if str(label) not in self.color_map:
@@ -648,7 +645,7 @@ class MRSPlotter(QMainWindow):
         self.ui.labels_found.clear()
         
         # Get unique tissue types after combining
-        tissue_types = sorted(combined_data['TissueType'].unique())
+        tissue_types = sorted(combined_data['TissueType'].unique(), key=sort_numbers)
         
         # Add labels to the list
         for i, label in enumerate(tissue_types):
@@ -968,7 +965,7 @@ class MRSPlotter(QMainWindow):
         
         # Extract unique tissue types and update labels
         if 'TissueType' in self.dataTable.columns:
-            tissueTypes = sorted(self.dataTable['TissueType'].unique(), key=lambda x: (x == '***', x))
+            tissueTypes = sorted(self.dataTable['TissueType'].unique(), key=sort_numbers)
 
             
             # Clear existing labels
@@ -1012,8 +1009,10 @@ class MRSPlotter(QMainWindow):
         if multivoxel_index >= 0:
             self.ui.plot_type.removeItem(multivoxel_index)
     
-        # Add Multivoxel grid only if file type is multivoxel
-        if hasattr(self, 'filetype') and self.filetype in ('multi_voxel', 'CSV_multi_voxel'):
+        # Add Multivoxel grid only if file type is multivoxel or data has x/y coordinates
+        has_xy = (hasattr(self, 'dataTable') and self.dataTable is not None
+                  and 'x_pos' in self.dataTable.columns and 'y_pos' in self.dataTable.columns)
+        if has_xy or (hasattr(self, 'filetype') and self.filetype in ('multi_voxel', 'CSV_multi_voxel')):
             self.ui.plot_type.addItem('Multivoxel grid')
             self.ui.export_multivoxel_grid.setEnabled(True)
             self.ui.select_mean.setEnabled(True)
