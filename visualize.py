@@ -1,5 +1,5 @@
 from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtGui import QColor, QIcon, QPalette
 from PyQt6.QtWidgets import (
     QStyle
     
@@ -237,7 +237,7 @@ class Ui_svPlotter(object):
         # Create a small button (on the left)
         self.modify_data_button = QtWidgets.QPushButton('')
         self.modify_data_button.setObjectName('view_edit_button')
-        self.modify_data_button.setFixedSize(40, 24)  # Even smaller button
+        self.modify_data_button.setFixedSize(25, 25)  # Even smaller button
         self.modify_data_layout.addWidget(self.modify_data_button)
 
         # Add label with elided text if needed
@@ -270,25 +270,27 @@ class Ui_svPlotter(object):
 
 
         # In the label_container layout, after the labels_found widget
-        self.combine_labels_btn = QtWidgets.QPushButton("Combine Labels")
+        self.combine_labels_btn = QtWidgets.QPushButton("")
         self.combine_labels_btn.setObjectName("combine_labels_btn")
-        self.combine_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 90px; max-width: 90px; }")
+        self.combine_labels_btn.setToolTip("Combine Labels")
+        self.combine_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
         # In the label_container layout,
-        self.source_labels_btn = QtWidgets.QPushButton("Load labels")
+        self.source_labels_btn = QtWidgets.QPushButton("")
         self.source_labels_btn.setObjectName("source_labels_btn")
-        self.source_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 90px; max-width: 90px; }")
+        self.source_labels_btn.setToolTip("Load Labels")
+        self.source_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
         # Add a button to reset label combinations (icon only, same as toolbar)
         self.reset_combinations_btn = QtWidgets.QPushButton()
         self.reset_combinations_btn.setObjectName("reset_combinations_btn")
-        self.reset_combinations_btn.setIcon(QIcon.fromTheme("view-refresh"))
         self.reset_combinations_btn.setToolTip("Reset Combinations")
-        self.reset_combinations_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 28px; max-width: 28px; }")
+        self.reset_combinations_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
-        # All buttons in one row, centered
+        # All buttons in one row, aligned left
         combine_buttons_layout = QtWidgets.QHBoxLayout()
-        combine_buttons_layout.addStretch(1)
+        combine_buttons_layout.setSpacing(0)
+        combine_buttons_layout.setContentsMargins(0, 0, 0, 0)
         combine_buttons_layout.addWidget(self.combine_labels_btn)
         combine_buttons_layout.addWidget(self.source_labels_btn)
         combine_buttons_layout.addWidget(self.reset_combinations_btn)
@@ -332,10 +334,27 @@ class Ui_svPlotter(object):
         self.update_plot_config_enabled(self.plot_type.currentText())
         
 
-        # Set an icon for the configure button
-        icon_path = path.join(path.dirname(path.abspath(__file__)), "resources", "icons8-settings.svg")
-        self.configure_plot_button.setIcon(QIcon(icon_path))
+        # Detect dark mode: if the window background is dark, use white icons
+        res_dir = path.join(path.dirname(path.abspath(__file__)), "resources")
+        bg_color = QtWidgets.QApplication.instance().palette().color(QPalette.ColorRole.Window)
+        is_dark = bg_color.lightnessF() < 0.5
+
+        # Set icon for the configure button
+        settings_icon = "icons8-settings_white.svg" if is_dark else "icons8-settings.svg"
+        self.configure_plot_button.setIcon(QIcon(path.join(res_dir, settings_icon)))
         self.configure_plot_button.setToolTip("Configure grid layout for subplots")
+
+        # Set icon for the source/load labels button
+        add_icon = "add_white.png" if is_dark else "add.png"
+        self.source_labels_btn.setIcon(QIcon(path.join(res_dir, add_icon)))
+
+        # Set icon for the combine labels button
+        arrows_icon = "arrows_white.png" if is_dark else "arrows.png"
+        self.combine_labels_btn.setIcon(QIcon(path.join(res_dir, arrows_icon)))
+
+        # Set icon for the reset combinations button
+        reset_icon = "reset_white.png" if is_dark else "reset.png"
+        self.reset_combinations_btn.setIcon(QIcon(path.join(res_dir, reset_icon)))
 
         # Set initial state
         self.update_plot_config_enabled(self.plot_type.currentText())
