@@ -77,7 +77,7 @@ def determine_filetype(filepath_list):
 def read_files(filepath_list, ppm_range,  statusbar=None):
     filepath = filepath_list[0]
     filetype = determine_filetype(filepath_list)
-    update_status(statusbar, f"{filetype} file type", 3000)
+    update_status(statusbar, f"{filetype} file type")
     #print(filetype)
 
     if filetype == 'multi_voxel':
@@ -105,10 +105,16 @@ def read_files(filepath_list, ppm_range,  statusbar=None):
                                                                                         statusbar= None)
 
     else:
-        update_status(statusbar, f"Unknown file type", 3000)
+        update_status(statusbar, f"Unknown file type")
         # Handle unknown file type
    
     #dataTable['TissueType'] = dataTable['TissueType'].replace('***', 'non-specific')
+
+    # Rename PPM_X to show real value
+    ppm_cols = sorted([col for col in dataTable.columns if col.startswith('PPM_')],
+                      key=lambda x: int(x.split('_')[1]))
+    rename_map = {col: f'PPM_{xaxis[i]:.2f}' for i, col in enumerate(ppm_cols)}
+    dataTable = dataTable.rename(columns=rename_map)
 
     return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 

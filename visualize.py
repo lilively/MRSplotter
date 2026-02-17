@@ -536,33 +536,43 @@ class Ui_svPlotter(object):
         self.sidebar_layout.addWidget(self.output_group_group)
         self.sidebar_layout.addWidget(self.export_options_group)
         
+        # Add a spacer to push export button to the bottom
+        self.sidebar_layout.addStretch()
+
         # Save Plot Button
         self.button_export_plot = QtWidgets.QPushButton("Export File(s)")
         self.button_export_plot.setObjectName("button_gen_plot")
         self.sidebar_layout.addWidget(self.button_export_plot)
-        
-        # Add a spacer at the bottom of the sidebar
-        self.sidebar_layout.addStretch()
-        
+
         # Add the sidebar to the main layout
         self.main_layout.addWidget(self.sidebar_widget)
-        
+
         # Right side for plot
         self.plot_widget = QtWidgets.QWidget()
         self.plot_widget.setObjectName("plot_widget")
         self.plot_layout = QtWidgets.QVBoxLayout(self.plot_widget)
         self.plot_layout.setObjectName("plot_layout")
-        
+
         # Plot area will be added in the main.py file
-        
+
         # Add the plot widget to the main layout with stretch
         self.main_layout.addWidget(self.plot_widget, 1)
-        
-        # Status bar
-        self.statusbar = QtWidgets.QStatusBar(parent=svPlotter)
+
+        # Status bar label (added to plot_layout after canvas in main.py)
+        self.statusbar = QtWidgets.QLabel("Ready — Load files to get started")
         self.statusbar.setObjectName("statusbar")
-        svPlotter.setStatusBar(self.statusbar)
-        
+        self.statusbar.setStyleSheet("""
+            QLabel {
+                background-color: rgba(1, 1, 1, 0.08);
+                color: #383B96;
+                font-size: 12px;
+                font-weight: bold;
+                padding: 6px 10px;
+                
+            }
+        """)
+        self.statusbar.setWordWrap(True)
+
         # Set widget names and connect signals
         self.retranslateUi(svPlotter)
         QtCore.QMetaObject.connectSlotsByName(svPlotter)

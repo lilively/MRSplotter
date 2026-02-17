@@ -31,7 +31,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
     Returns:
     bool: True if successful, False otherwise
     """
-    update_status(statusbar,"Starting individual plot export...", 5000)
+    update_status(statusbar,"Starting individual plot export...")
     # Get the tissue types from the data table based on selected colors
     selected_tissue_types = list(selected_color.keys())
 
@@ -74,7 +74,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
         # Get PPM columns
         ppm_cols = sorted(
             [col for col in filtered.columns if col.startswith('PPM_')],
-            key=lambda c: int(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1])
         )
 
         # Determine file ending based on options
@@ -84,8 +84,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
         elif not legend_visible:
             fileending = 'legend'
 
-        if statusbar:
-            statusbar.showMessage(f"Processing {len(filtered)} spectra for tissue type: {tissue_type}", 2000)
+        update_status(statusbar, f"Processing {len(filtered)} spectra for tissue type: {tissue_type}")
 
         # Iterate per row so each voxel gets its own plot
         for row_idx, row in filtered.iterrows():
@@ -137,14 +136,14 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
                     plt.savefig(outPath, dpi=dpi)
 
                     if statusbar:
-                        update_status(statusbar,f"Saving results as {filename} to {output_directory}", 5000)
+                        update_status(statusbar,f"Saving results as {filename} to {output_directory}")
                     else:
                         print(f'Saving results as {filename} to {output_directory}')
 
                     exported_count += 1
                 except Exception as e:
                     if statusbar:
-                        update_status(statusbar,f"Error saving {filename}...", 5000)
+                        update_status(statusbar,f"Error saving {filename}...")
                     else:
                         print(f"Error saving {filename}: {str(e)}")
 

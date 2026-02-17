@@ -9,7 +9,7 @@ def export_intenity(output_directory,ppm_list_vertical, ppm_range, statusbar, nu
         try:
             ppm_column = get_PPM(item, number_of_points, ppm_range[1], ppm_range[0])
             ppm_column = get_PPM(item, number_of_points, ppm_range[1], ppm_range[0])
-            update_status(statusbar,(f'The column for {item} is {ppm_column}'), 2000)
+            update_status(statusbar,(f'The column for {item} is {ppm_column}'))
             #case_info = dataTable.iloc[:, :4]
             #case_info = dataTable[['ID', 'TissueType', 'x_pos', 'y_pos']]
             available_columns = ['ID', 'TissueType','SNR', 'x_pos', 'y_pos']
@@ -24,7 +24,7 @@ def export_intenity(output_directory,ppm_list_vertical, ppm_range, statusbar, nu
         
         except Exception as e:
                         if statusbar:
-                            update_status(statusbar,f"Error saving {filename}...", 5000)
+                            update_status(statusbar,f"Error saving {filename}...")
                         else:
                             print(f"Error saving {filename}: {str(e)}")
         if output_directory :
@@ -34,12 +34,12 @@ def export_intenity(output_directory,ppm_list_vertical, ppm_range, statusbar, nu
             result.to_excel(outPath, index=False)
         # Update status bar if available
             if statusbar:
-                update_status(statusbar,f"Saving intensities at {item} as {filename} to {output_directory}", 5000)
+                update_status(statusbar,f"Saving intensities at {item} as {filename} to {output_directory}")
             else:
                 print(f'Saving results as {filename} to {output_directory}')
         except Exception as e:
                         if statusbar:
-                            update_status(statusbar,f"Error saving {filename}...", 5000)
+                            update_status(statusbar,f"Error saving {filename}...")
                         else:
                             print(f"Error saving {filename}: {str(e)}")
 

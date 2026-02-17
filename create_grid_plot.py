@@ -41,7 +41,7 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
     # Check if dataTable has position information
     if 'X_Pos' not in dataTable.columns or 'Y_Pos' not in dataTable.columns:
         if statusbar:
-            update_status(statusbar, "Error: Grid plot requires X_Pos and Y_Pos columns in data", 3000)
+            update_status(statusbar, "Error: Grid plot requires X_Pos and Y_Pos columns in data")
         return None
     
     # Calculate global y-limits if not provided
@@ -60,7 +60,7 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
         grid_rows = len(y_positions)
     
     if statusbar:
-        update_status(statusbar, f"Creating grid with {grid_rows} rows and {grid_cols} columns", 2000)
+        update_status(statusbar, f"Creating grid with {grid_rows} rows and {grid_cols} columns")
     
     # Create position mapping for faster lookups
     position_lookup = {}
@@ -263,11 +263,11 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                         plt.close(fig_single)  # Close to free memory
                         
                         if statusbar:
-                            update_status(statusbar, f'Saved plot for position X:{x_pos}, Y:{y_pos} as {subplot_filename}', 2000)
+                            update_status(statusbar, f'Saved plot for position X:{x_pos}, Y:{y_pos} as {subplot_filename}')
                     
                     except Exception as e:
                         if statusbar:
-                            update_status(statusbar, f'Error saving subplot for position X:{x_pos}, Y:{y_pos}: {str(e)}', 3000)
+                            update_status(statusbar, f'Error saving subplot for position X:{x_pos}, Y:{y_pos}: {str(e)}')
     
     # Add empty axes for any missing grid positions to maintain grid structure
     for row in range(grid_rows):
@@ -303,9 +303,9 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
             plt.savefig(outPath, dpi=dpi)
             
             if statusbar:
-                update_status(statusbar, f'Saved grid plot as {filename}', 3000)
+                update_status(statusbar, f'Saved grid plot as {filename}')
         except Exception as e:
             if statusbar:
-                update_status(statusbar, f'Error saving grid plot: {str(e)}', 3000)
+                update_status(statusbar, f'Error saving grid plot: {str(e)}')
     
     return fig

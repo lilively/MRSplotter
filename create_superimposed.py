@@ -44,7 +44,7 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
     if not selected_tissue_types:
         # If no tissue types are selected, return None
         if statusbar:
-            update_status(statusbar, "No tissue types selected for superimposed plot", 3000)
+            update_status(statusbar, "No tissue types selected for superimposed plot")
         return None
     
     # Create options dictionary for filename
@@ -72,9 +72,9 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
             outPath = path.join(output_directory, filename)
             
             # Debug information
-            update_status(statusbar,f"Preparing to save superimposed plot to: {outPath}", 2000)
+            update_status(statusbar,f"Preparing to save superimposed plot to: {outPath}")
         except Exception as e:
-            update_status(statusbar,f"Error creating output directory: {str(e)}", 3000)
+            update_status(statusbar,f"Error creating output directory: {str(e)}")
             return None
     
     # Calculate global y-limits
@@ -87,7 +87,7 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
                 include_sdev
             )
         except Exception as e:
-            update_status(statusbar,f"Error calculating Y limits: {str(e)}", 3000)
+            update_status(statusbar,f"Error calculating Y limits: {str(e)}")
             # Fall back to default y-limits
             global_minIntensity, global_maxIntensity = -5, 15
     else:
@@ -133,13 +133,13 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
 
         # Skip if no data found
         if num_spectra == 0:
-            update_status(statusbar,f"No cases found for tissue type: {tissue_type}", 2000)
+            update_status(statusbar,f"No cases found for tissue type: {tissue_type}")
             continue
 
         # Get PPM columns sorted numerically
         ppm_cols = sorted(
             [col for col in filtered.columns if col.startswith('PPM_')],
-            key=lambda c: int(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1])
         )
 
         # Prepare data for mean and standard deviation
@@ -234,8 +234,8 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
             # Save the figure
             fig.savefig(outPath, dpi=dpi, bbox_inches='tight')
             
-            update_status(statusbar,f'Successfully saved superimposed plot as {filename} to {output_directory}', 3000)
+            update_status(statusbar,f'Successfully saved superimposed plot as {filename} to {output_directory}')
         except Exception as e:
-            update_status(statusbar,f'Error saving superimposed plot: {str(e)}', 5000)
+            update_status(statusbar,f'Error saving superimposed plot: {str(e)}')
 
     return fig

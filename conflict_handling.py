@@ -1,4 +1,5 @@
 from re import sub, split as re_split
+from status import update_status
 
 
 def sort_numbers(s):
@@ -58,7 +59,7 @@ def validate_ppm_range(ppm_range, firstPPM, lastPPM, statusbar=None, parent=None
     
     # Show adjustment message if needed
     if adjustments_made and statusbar:
-        statusbar.showMessage(f"PPM range adjusted to fit data bounds: {valid_range[0]:.2f}ppm, {valid_range[1]:.2f} ppm from file.", 5000)
+        update_status(statusbar, f"PPM range adjusted to fit data bounds: {valid_range[0]:.2f}ppm, {valid_range[1]:.2f} ppm from file.")
             # Show a popup dialog if parent is provided
     if adjustments_made and parent:
         from PyQt6.QtWidgets import QMessageBox

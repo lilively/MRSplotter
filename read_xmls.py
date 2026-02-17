@@ -107,7 +107,7 @@ def readXML_SpectraClassifier(ppm_range, filepath, output_directory=None,  statu
         dataTable = DataFrame(data)
         xaxis = flip(linspace(ppm_range[0], ppm_range[1], len(points_filtered), endpoint=True))
         number_of_points = len(points_filtered)
-        update_status(statusbar,f"{len(data)} xml files processed", 3000)
+        update_status(statusbar,f"{len(data)} xml files processed")
         
         return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 
@@ -128,7 +128,7 @@ def readxml_list_of_jmrui(file_paths, ppm_range, output_directory=None,  statusb
     
     for filepath in file_paths:
         #print(f"Currently reading in {filepath}")
-        update_status(statusbar,f"Currently reading in {filepath}", 3000)
+        update_status(statusbar,f"Currently reading in {filepath}")
         caseID, first_ppm, last_ppm, num_points, points_filtered, file_xaxis, dataTable_read = readXML_jmrui(filepath, ppm_range)
         dfs.append(dataTable_read)
         
@@ -139,7 +139,7 @@ def readxml_list_of_jmrui(file_paths, ppm_range, output_directory=None,  statusb
     # Combine all data tables
     dataTable = concat(dfs, axis=0)
    
-    update_status(statusbar,f"{len(dfs)} xml files processed", 3000)
+    update_status(statusbar,f"{len(dfs)} xml files processed")
     
     return firstPPM, lastPPM, number_of_points, xaxis, dataTable
 
@@ -207,7 +207,7 @@ def readxml_list_of_multi_voxel(file_paths, ppm_range,  statusbar=None):
     xaxis = None
     
     for filepath in file_paths:
-        #print(f"Currently reading in {filepath}")        update_status(statusbar,f"Currently reading in voxels {filepath}", 3000)
+        #print(f"Currently reading in {filepath}")        update_status(statusbar,f"Currently reading in voxels {filepath}")
         caseID, first_ppm, last_ppm, num_points, points_filtered, file_xaxis, dataTable_read = read_multi_voxel_as_table(filepath, ppm_range)
         dfs.append(dataTable_read)
         
@@ -218,7 +218,7 @@ def readxml_list_of_multi_voxel(file_paths, ppm_range,  statusbar=None):
      # Combine all data tables
     dataTable = concat(dfs, axis=0)
    
-    update_status(statusbar,f"{len(dfs)} xml files processed", 3000)
+    update_status(statusbar,f"{len(dfs)} xml files processed")
     
     return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 
@@ -229,7 +229,7 @@ def readxml_list_of_spectraclassifier(file_paths, ppm_range,  statusbar=None):
     xaxis = None
     
     for filepath in file_paths:
-        #print(f"Currently reading in {filepath}")        update_status(statusbar,f"Currently reading in voxels {filepath}", 3000)
+        #print(f"Currently reading in {filepath}")        update_status(statusbar,f"Currently reading in voxels {filepath}")
         firstPPM, lastPPM,number_of_points,xaxis,dataTable = readXML_SpectraClassifier(ppm_range=ppm_range,
                                                                         filepath =filepath,             
                                                                         statusbar=None)
@@ -242,7 +242,7 @@ def readxml_list_of_spectraclassifier(file_paths, ppm_range,  statusbar=None):
      # Combine all data tables
     dataTable = concat(dfs, axis=0)
    
-    update_status(statusbar,f"{len(dfs)} xml files processed", 3000)
+    update_status(statusbar,f"{len(dfs)} xml files processed")
     
     return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 

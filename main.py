@@ -23,6 +23,7 @@ from create_superimposed import create_superimposed
 from create_individual_plots import create_individual_plots
 from global_intensities import calculate_y_limit
 from conflict_handling import validate_ppm_range, sort_numbers
+from status import update_status
 from create_multivoxel_grid import create_multivoxel_plot, export_mv_grid
 
 
@@ -80,6 +81,7 @@ class MRSPlotter(QMainWindow):
 
         self.ui.plot_layout.addWidget(self.toolbar)
         self.ui.plot_layout.addWidget(self.canvas, 1)
+        self.ui.plot_layout.addWidget(self.ui.statusbar)
 
         self.legend_visible = True
 
@@ -305,9 +307,9 @@ class MRSPlotter(QMainWindow):
     def modify_data(self):
         """Open a dialog to view and modify the filtered dataframe"""
         if not self.files_processed or self.dataTable is None:
-            self.ui.statusbar.showMessage("Please load and process files first", 3000)
+            update_status(self.ui.statusbar,"Please load and process files first")
             return
-        
+
         # Check if filtered_dataTable exists, if not use the full dataTable
         # Important: Make a fresh copy to ensure we're not editing an outdated version
         if hasattr(self, 'filtered_dataTable') and self.filtered_dataTable is not None:
@@ -392,11 +394,11 @@ class MRSPlotter(QMainWindow):
             
             # Update the plot preview
             self.update_preview()
-            self.ui.statusbar.showMessage("Data modified successfully", 3000)
+            update_status(self.ui.statusbar,"Data modified successfully")
             
         except Exception as e:
             print(f"Error in update_data_after_edit: {e}")
-            self.ui.statusbar.showMessage(f"Error updating data: {str(e)}", 5000)
+            update_status(self.ui.statusbar,f"Error updating data: {str(e)}")
             
     def update_dataframe(self, original_df, modified_df):
         """Safely update the original dataframe with modifications"""
@@ -517,9 +519,9 @@ class MRSPlotter(QMainWindow):
     def show_combine_labels_dialog(self):
         """Show dialog to combine labels into classes"""
         if not self.files_processed or not self.dataTable is not None:
-            self.ui.statusbar.showMessage("Please load and process files first", 3000)
+            update_status(self.ui.statusbar,"Please load and process files first")
             return
-        
+
         # Get all available labels
         all_labels = [self.ui.labels_found.item(i).text() 
                     for i in range(self.ui.labels_found.count())]
@@ -532,7 +534,7 @@ class MRSPlotter(QMainWindow):
     def show_source_labels_dialog(self):
         """Show dialog to load source labels from a contribution file"""
         if not self.files_processed or self.dataTable is None:
-            self.ui.statusbar.showMessage("Please load and process files first", 3000)
+            update_status(self.ui.statusbar,"Please load and process files first")
             return
 
         dialog = SourceLabelsDialog(self)
@@ -545,7 +547,7 @@ class MRSPlotter(QMainWindow):
         # Replace TissueType based on lookup
         replaced = 0
         if 'ID' not in self.dataTable.columns:
-            self.ui.statusbar.showMessage("No ID column found in loaded data", 3000)
+            update_status(self.ui.statusbar,"No ID column found in loaded data")
             return
 
         if lookup_by == 'ID':
@@ -565,7 +567,7 @@ class MRSPlotter(QMainWindow):
                     y_col = candidate
                     break
             if x_col is None or y_col is None:
-                self.ui.statusbar.showMessage("No x/y coordinate columns found in loaded data", 3000)
+                update_status(self.ui.statusbar,"No x/y coordinate columns found in loaded data")
                 return
             for idx, row in self.dataTable.iterrows():
                 voxel_id = str(row['ID'])
@@ -592,23 +594,23 @@ class MRSPlotter(QMainWindow):
 
         self.filtered_dataTable = None
         self.update_preview()
-        self.ui.statusbar.showMessage(f"Relabeled {replaced}/{len(self.dataTable)} voxels with source labels", 3000)
+        update_status(self.ui.statusbar,f"Relabeled {replaced}/{len(self.dataTable)} voxels with source labels")
 
     def reset_label_combinations(self):
         """Reset any label combinations and restore original labels"""
         if not self.files_processed or self.dataTable is None:
-            self.ui.statusbar.showMessage("No data to reset", 3000)
+            update_status(self.ui.statusbar,"No data to reset")
             return
         
         # Reload the original data from the selected files
         success = self.load_data_from_files(self.selected_files)
         
         if success:
-            self.ui.statusbar.showMessage("Label combinations reset to original", 3000)
+            update_status(self.ui.statusbar,"Label combinations reset to original")
             # This will also update the labels list and colors
             self.update_preview()
         else:
-            self.ui.statusbar.showMessage("Failed to reset label combinations", 3000)
+            update_status(self.ui.statusbar,"Failed to reset label combinations")
 
     def process_label_combinations(self, combinations):
         """Process the label combinations and update the UI"""
@@ -670,7 +672,7 @@ class MRSPlotter(QMainWindow):
         self.update_preview()
         
         # Show success message
-        self.ui.statusbar.showMessage(f"Created {len(combinations)} combined label classes", 3000)
+        update_status(self.ui.statusbar,f"Created {len(combinations)} combined label classes")
         
     def resizeEvent(self, event):
         """Handle window resize event by updating the plot size"""
@@ -840,7 +842,7 @@ class MRSPlotter(QMainWindow):
             self.grid_rows = settings['rows'] 
             self.grid_cols = settings['cols']
             
-            self.ui.statusbar.showMessage(f"New grid settings: auto={self.use_auto_grid}, rows={self.grid_rows}, cols={self.grid_cols}", 3000)
+            update_status(self.ui.statusbar,f"New grid settings: auto={self.use_auto_grid}, rows={self.grid_rows}, cols={self.grid_cols}")
           
             
             # If we already have data loaded, update the preview
@@ -867,7 +869,7 @@ class MRSPlotter(QMainWindow):
                 except ValueError:
                     first_ppm = 0.0
                     last_ppm = 4.5
-                    self.ui.statusbar.showMessage("Using default PPM range [0.0, 4.5]", 3000)
+                    update_status(self.ui.statusbar,"Using default PPM range [0.0, 4.5]")
                 
                 # Store original values for comparison later
                 original_first_ppm = first_ppm
@@ -877,21 +879,21 @@ class MRSPlotter(QMainWindow):
                 success = self.load_data_from_files(self.selected_files)
                 
                 if not success:
-                    self.ui.statusbar.showMessage("Failed to load data with the specified PPM range", 3000)
+                    update_status(self.ui.statusbar,"Failed to load data with the specified PPM range")
                     return
                 
                 # Check if either PPM range boundary was adjusted
                 if original_first_ppm != self.valid_ppm_range[0] or original_last_ppm != self.valid_ppm_range[1]:
                     # Show appropriate status message
                     if original_first_ppm != self.valid_ppm_range[0] and original_last_ppm != self.valid_ppm_range[1]:
-                        self.ui.statusbar.showMessage(
-                            f"Using PPM range {self.valid_ppm_range[0]} to {self.valid_ppm_range[1]} from file (input was out of range)", 5000)
+                        update_status(self.ui.statusbar,
+                            f"Using PPM range {self.valid_ppm_range[0]} to {self.valid_ppm_range[1]} from file (input was out of range)")
                     elif original_first_ppm != self.valid_ppm_range[0]:
-                        self.ui.statusbar.showMessage(
-                            f"Using first PPM {self.valid_ppm_range[0]} from file (input was out of range)", 5000)
+                        update_status(self.ui.statusbar,
+                            f"Using first PPM {self.valid_ppm_range[0]} from file (input was out of range)")
                     elif original_last_ppm != self.valid_ppm_range[1]:
-                        self.ui.statusbar.showMessage(
-                            f"Using last PPM {self.valid_ppm_range[1]} from file (input was out of range)", 5000)
+                        update_status(self.ui.statusbar,
+                            f"Using last PPM {self.valid_ppm_range[1]} from file (input was out of range)")
                     
                 # For PPM range adjustment:
                 self.show_message_dialog(
@@ -927,7 +929,7 @@ class MRSPlotter(QMainWindow):
                 self.update_preview()
         
             except Exception as e:
-                self.ui.statusbar.showMessage(f"Error updating PPM range: {str(e)}", 5000)
+                update_status(self.ui.statusbar,f"Error updating PPM range: {str(e)}")
                 print(f"Error in update_data_and_preview: {e}")
 
     
@@ -1047,7 +1049,7 @@ class MRSPlotter(QMainWindow):
         
 
         if not (include_mean or plot_individual_plots):
-            self.ui.statusbar.showMessage("Please select mean or each spectra to display", 3000)
+            update_status(self.ui.statusbar,"Please select mean or each spectra to display")
             self.clear_plot()
             self.figure.clear()
             ax = self.figure.add_subplot(111)
@@ -1088,7 +1090,7 @@ class MRSPlotter(QMainWindow):
         
         # Add error handling for empty selection after reloading
         if not selected_labels:
-            self.ui.statusbar.showMessage("No valid labels selected for current PPM range", 3000)
+            update_status(self.ui.statusbar,"No valid labels selected for current PPM range")
             self.clear_plot()
             return
         
@@ -1097,7 +1099,7 @@ class MRSPlotter(QMainWindow):
         
         # Check if filtered data is empty
         if self.filtered_dataTable.empty:
-            self.ui.statusbar.showMessage("No data available for selected labels in this PPM range", 3000)
+            update_status(self.ui.statusbar,"No data available for selected labels in this PPM range")
             self.clear_plot()
             return
         
@@ -1108,7 +1110,7 @@ class MRSPlotter(QMainWindow):
                 False if plot_individual_plots else include_mean,
                 include_sdev)
         except Exception as e:
-            self.ui.statusbar.showMessage(f"Error calculating y-limits: {str(e)}", 3000)
+            update_status(self.ui.statusbar,f"Error calculating y-limits: {str(e)}")
             self.clear_plot()
             return
         
@@ -1226,7 +1228,7 @@ class MRSPlotter(QMainWindow):
      
         except Exception as e:
             # Handle any errors gracefully
-            self.ui.statusbar.showMessage(f"Error creating plot: {str(e)}", 5000)
+            update_status(self.ui.statusbar,f"Error creating plot: {str(e)}")
             print(f"Error in update_preview: {str(e)}")
             
             # Create a fallback empty plot with error message
@@ -1244,13 +1246,13 @@ class MRSPlotter(QMainWindow):
     def export_plots(self):
         """Export plots with proper figure management to avoid closing the main canvas figure"""
         if not self.files_processed:
-            self.ui.statusbar.showMessage("Please select and process files first", 3000)
+            update_status(self.ui.statusbar,"Please select and process files first")
             return
                 
         # Get output directory
         self.output_directory = self.ui.outdir_input.text()
         if not self.output_directory:
-            self.ui.statusbar.showMessage("Please select an output directory for saving", 3000)
+            update_status(self.ui.statusbar,"Please select an output directory for saving")
             return
         
         # Check if any export option is selected
@@ -1261,7 +1263,7 @@ class MRSPlotter(QMainWindow):
         export_multivoxel_grid = self.ui.export_multivoxel_grid.isChecked()
         
         if not (export_displayed or export_each_subplot or export_individual or export_intensities or export_multivoxel_grid):
-            self.ui.statusbar.showMessage("Please select at least one export option", 3000)
+            update_status(self.ui.statusbar,"Please select at least one export option")
             return
         
         # Get plot options
@@ -1377,7 +1379,7 @@ class MRSPlotter(QMainWindow):
                 export_success = True
                 
             except Exception as e:
-                self.ui.statusbar.showMessage(f"Error exporting plot: {str(e)}", 5000)
+                update_status(self.ui.statusbar,f"Error exporting plot: {str(e)}")
         
         if export_multivoxel_grid:
             try:
@@ -1401,7 +1403,7 @@ class MRSPlotter(QMainWindow):
                
                 export_success = True
             except Exception as e:
-                self.ui.statusbar.showMessage(f"Error exporting individual plots: {str(e)}", 5000)
+                update_status(self.ui.statusbar,f"Error exporting individual plots: {str(e)}")
 
         if export_individual:
             try:
@@ -1422,7 +1424,7 @@ class MRSPlotter(QMainWindow):
                 )
                 export_success = True
             except Exception as e:
-                self.ui.statusbar.showMessage(f"Error exporting individual plots: {str(e)}", 5000)
+                update_status(self.ui.statusbar,f"Error exporting individual plots: {str(e)}")
         if export_intensities:
             try:
                 from metabolites import export_intenity 
@@ -1436,7 +1438,7 @@ class MRSPlotter(QMainWindow):
                 )
                 export_success = True
             except Exception as e:
-                self.ui.statusbar.showMessage(f"Error exporting intensities: {str(e)}", 5000)
+                update_status(self.ui.statusbar,f"Error exporting intensities: {str(e)}")
         
         # Restore the original figure to avoid disrupting the main canvas
         plt.figure(self.figure.number)
@@ -1446,9 +1448,9 @@ class MRSPlotter(QMainWindow):
         
         # Show success message
         if export_success:
-            self.ui.statusbar.showMessage(f"File(s) exported to {self.output_directory}", 3000)
+            update_status(self.ui.statusbar,f"File(s) exported to {self.output_directory}")
         else:
-            self.ui.statusbar.showMessage("No files exported. Check export options and try again.", 3000)
+            update_status(self.ui.statusbar,"No files exported. Check export options and try again.")
 
 
 # Run application when executed directly

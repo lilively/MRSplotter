@@ -378,7 +378,7 @@ def read_list_of_csv(file_paths, ppm_range, statusbar=None):
     for filepath in file_paths:
         print(f"Currently reading in {filepath}")
         if statusbar is not None:
-            update_status(statusbar, f"Currently reading in {filepath}", 3000)
+            update_status(statusbar, f"Currently reading in {filepath}")
         
         try:
             file_firstPPM, file_lastPPM, file_number_of_points, file_xaxis, filtered_dataTable = read_structured_csv(
@@ -397,7 +397,7 @@ def read_list_of_csv(file_paths, ppm_range, statusbar=None):
         except Exception as e:
             print(f"Error reading file {filepath}: {e}")
             if statusbar is not None:
-                update_status(statusbar, f"Error reading {filepath}: {e}", 5000)
+                update_status(statusbar, f"Error reading {filepath}: {e}")
             continue
     
     # Combine all data tables
@@ -428,6 +428,6 @@ def read_list_of_csv(file_paths, ppm_range, statusbar=None):
             dataTable[col] = pd.to_numeric(dataTable[col], errors='coerce')
 
     if statusbar is not None:
-        update_status(statusbar, f"{len(dfs)} CSV files processed", 3000)
+        update_status(statusbar, f"{len(dfs)} CSV files processed")
 
     return firstPPM, lastPPM, number_of_points, xaxis, dataTable

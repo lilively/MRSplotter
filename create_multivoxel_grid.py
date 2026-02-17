@@ -34,7 +34,7 @@ def get_row_data(dataTable, x_pos, y_pos, case_id, id_mode='xml'):
     # Get PPM columns (intensity data), sorted numerically
     ppm_columns = sorted(
         [col for col in filtered_data.columns if col.startswith('PPM_')],
-        key=lambda c: int(c.split('_')[1])
+        key=lambda c: float(c.split('_')[1])
     )
     if not ppm_columns:
         return None, None
@@ -170,7 +170,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         # Grab one valid spectrum to use as invisible placeholder in empty cells
         ppm_columns = sorted(
             [col for col in dataTable.columns if col.startswith('PPM_')],
-            key=lambda c: int(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1])
         )
     
         # Create grid layout
@@ -265,20 +265,17 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 filename = f"{filename}_{fileending}grid.png"
                 outPath = path.join(output_directory, filename)
                 
+                # Update status bar before saving
+                update_status(statusbar, f"Saving {filename}...")
+
                 # Save the figure
                 fig.savefig(outPath, dpi=dpi, bbox_inches='tight', pad_inches=0)
 
-                # Update status bar if available
-                if statusbar:
-                    update_status(statusbar,f"Saving results as {filename} to {output_directory}", 5000)
-                else:
-                    print(f'Saving results as {filename} to {output_directory}')
-                    
                 exported_count += 1
-    
-                update_status(statusbar,f'Successfully saved multivoxel plot as {filename} to {output_directory}', 3000)
+
+                update_status(statusbar, f"Successfully saved {filename} to {output_directory}")
             except Exception as e:
-                update_status(statusbar,f'Error saving multivoxel plot: {str(e)}', 5000)
+                update_status(statusbar,f'Error saving multivoxel plot: {str(e)}')
         return fig
 
 
@@ -293,7 +290,7 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
     # Check if this is multivoxel data
     if 'x_pos' not in dataTable.columns or 'y_pos' not in dataTable.columns:
         if statusbar:
-            update_status(statusbar, "Data is not suitable for multivoxel grid export", 3000)
+            update_status(statusbar, "Data is not suitable for multivoxel grid export")
         return
     
     # Compute global x/y range across ALL cases for consistent grid sizes
@@ -324,6 +321,8 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
             if case_data.empty:
                 continue
 
+            update_status(statusbar, f"Exporting {case_id or 'multivoxel'}...")
+
             # Create the plot for this case with global grid dimensions
             fig = create_multivoxel_plot(
                 output_directory=output_directory,
@@ -350,12 +349,11 @@ def export_mv_grid(output_directory, xaxis, dataTable, include_mean, include_sde
             if fig:
                 plt.close(fig)
                 
-            if statusbar:
-                update_status(statusbar,f"Saving results of {case_id or 'multivoxel'} to {output_directory}", 5000)
+            update_status(statusbar, f"Exported {case_id or 'multivoxel'} to {output_directory}")
 
         except Exception as e:
             if statusbar:
-                update_status(statusbar, f"Error exporting {case_id or 'multivoxel'}: {str(e)}", 3000)
+                update_status(statusbar, f"Error exporting {case_id or 'multivoxel'}: {str(e)}")
     
 
 

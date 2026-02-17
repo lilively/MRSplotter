@@ -207,7 +207,7 @@ def read_list_of_jmrui_text(file_paths, ppm_range,  statusbar=None):
     
     for filepath in file_paths:
         #print(f"Currently reading in {filepath}")
-        update_status(statusbar,f"Currently reading in {filepath}", 3000)
+        update_status(statusbar,f"Currently reading in {filepath}")
         firstPPM, lastPPM, number_of_points,xaxis,filtered_dataTable = read_jmrui_text_data(filepath=filepath,
                                                                                        ppm_range=ppm_range)
         dfs.append(filtered_dataTable)
@@ -219,6 +219,6 @@ def read_list_of_jmrui_text(file_paths, ppm_range,  statusbar=None):
     # Combine all data tables
     dataTable = concat(dfs, axis=0)
    
-    update_status(statusbar,f"{len(dfs)} xml files processed", 3000)
+    update_status(statusbar,f"{len(dfs)} xml files processed")
     
     return firstPPM, lastPPM, number_of_points, xaxis, dataTable

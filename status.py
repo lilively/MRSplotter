@@ -1,9 +1,9 @@
 from PyQt6.QtCore import QCoreApplication
 
 
-def update_status(statusbar,message, duration=1000):
+def update_status(statusbar, message):
         if statusbar:
-            statusbar.showMessage(message, duration)
+            statusbar.setText(message)
             # Force the application to process events to update the UI
             QCoreApplication.processEvents()
 

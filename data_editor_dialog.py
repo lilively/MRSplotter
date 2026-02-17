@@ -364,7 +364,7 @@ class DataEditorDialog(QDialog):
                 
                 # Get spectral data columns
                 ppm_cols = sorted([col for col in current_data.columns if col.startswith('PPM_')],
-                                key=lambda x: int(x.split('_')[1]))
+                                key=lambda x: float(x.split('_')[1]))
                 
                 # Get PPM parameters from xaxis
                 first_ppm = min(self.xaxis) if self.xaxis is not None and len(self.xaxis) > 0 else 0

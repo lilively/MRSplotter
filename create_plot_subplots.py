@@ -49,12 +49,12 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
     # If no tissue types selected, return None
     if len(selected_tissue_types) == 0:
         if statusbar:
-            update_status(statusbar, "No tissue types selected for plotting", 3000)
+            update_status(statusbar, "No tissue types selected for plotting")
         return None
 
     # Debug info
     #if statusbar:
-        #update_status(statusbar, f"Creating subplot for {len(selected_tissue_types)} tissue types", 2000)
+        #update_status(statusbar, f"Creating subplot for {len(selected_tissue_types)} tissue types")
     
     # # Create sanitized tissue names dictionary for filenames
     # sanitized_tissues = {tissue: sanitize_filename(tissue) for tissue in selected_tissue_types}
@@ -99,7 +99,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
     
     # Debug info
     if statusbar:
-        update_status(statusbar, f"Grid: {num_rows}×{num_cols}, PPM range: {ppm_range}", 2000)
+        update_status(statusbar, f"Grid: {num_rows}×{num_cols}, PPM range: {ppm_range}")
 
     if not include_mean and not plot_individual_plots:
         # Create at least one subplot to display a message
@@ -124,7 +124,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
             
         # # Debug info
         # if statusbar:
-        #     update_status(statusbar, f"Canvas: {width_inches:.1f}×{height_inches:.1f} inches at {dpi} DPI", 2000)
+        #     update_status(statusbar, f"Canvas: {width_inches:.1f}×{height_inches:.1f} inches at {dpi} DPI")
     else:
         # Use default scaling based on number of subplots
         fig = plt.figure(figsize=(5*num_cols, 4*num_rows))
@@ -153,7 +153,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
         # Get PPM columns sorted numerically
         ppm_cols = sorted(
             [col for col in filtered.columns if col.startswith('PPM_')],
-            key=lambda c: int(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1])
         )
 
         # Prepare data for mean and standard deviation
@@ -298,10 +298,10 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
                 
                 # Update status bar if available
                 
-                update_status(statusbar, f'Saved plot for {elem} as {subplot_filename}', 2000)
+                update_status(statusbar, f'Saved plot for {elem} as {subplot_filename}')
 
             except Exception as e:
-                update_status(statusbar, f'Error saving subplot for {elem}: {str(e)}', 3000)
+                update_status(statusbar, f'Error saving subplot for {elem}: {str(e)}')
 
 
     try:
@@ -319,9 +319,9 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
             plt.savefig(outPath, dpi=dpi)
             
             
-            update_status(statusbar, f'Saved combined plot as {filename}', 3000)
+            update_status(statusbar, f'Saved combined plot as {filename}')
         except Exception as e:
-            update_status(statusbar, f'Error saving combined plot: {str(e)}', 3000)
+            update_status(statusbar, f'Error saving combined plot: {str(e)}')
 
 
     return fig
