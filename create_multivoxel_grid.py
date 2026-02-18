@@ -34,7 +34,7 @@ def get_row_data(dataTable, x_pos, y_pos, case_id, id_mode='xml'):
     # Get PPM columns (intensity data), sorted numerically
     ppm_columns = sorted(
         [col for col in filtered_data.columns if col.startswith('PPM_')],
-        key=lambda c: float(c.split('_')[1])
+        key=lambda c: float(c.split('_')[1]), reverse=True
     )
     if not ppm_columns:
         return None, None
@@ -170,7 +170,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
         # Grab one valid spectrum to use as invisible placeholder in empty cells
         ppm_columns = sorted(
             [col for col in dataTable.columns if col.startswith('PPM_')],
-            key=lambda c: float(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1]), reverse=True
         )
     
         # Create grid layout
@@ -225,6 +225,8 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                     fileending = ''
                      # Add vertical reference lines if requested
                     if add_vertical_lines:
+                        ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+                        update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
                         for i, item in enumerate(ppm_list_vertical):
                             add_vertical_line_with_text(ax, item, float(global_maxIntensity), str(item))
                             fileending = 'vertical_'

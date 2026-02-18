@@ -77,7 +77,7 @@ class CustomNavigationToolbar(NavigationToolbar):
         'Subplot': 'view-grid',
         'Save': 'document-save'
         }
-   
+
         # Iterate through actions and replace icons
         for action in self.actions():
             text = action.text()
@@ -108,6 +108,13 @@ class CustomNavigationToolbar(NavigationToolbar):
             else:
                 self.legend_action.setIcon(QIcon.fromTheme("view-list-details"))
 
+        # Set Customize (edit axis) icon
+        for action in self.actions():
+            if action.text() == "Customize":
+                axes_path = path.join(path.dirname(path.abspath(__file__)), "resources", "plot_axes_white.png")
+                if path.exists(axes_path):
+                    action.setIcon(QIcon(axes_path))
+                break
 
     def setup_light_mode_icons(self):
         icon_mapping = {
@@ -119,7 +126,7 @@ class CustomNavigationToolbar(NavigationToolbar):
             'Subplot': 'view-grid',
             'Save': 'document-save'
         }
-       
+
         # Iterate through actions and replace icons
         for action in self.actions():
             text = action.text()
@@ -148,7 +155,14 @@ class CustomNavigationToolbar(NavigationToolbar):
             else:
                 self.legend_action.setIcon(QIcon.fromTheme("view-list-text"))
 
-        
+        # Set Customize (edit axis) icon
+        for action in self.actions():
+            if action.text() == "Customize":
+                axes_path = path.join(path.dirname(path.abspath(__file__)), "resources", "plot_axes.png")
+                if path.exists(axes_path):
+                    action.setIcon(QIcon(axes_path))
+                break
+
     # Add a method to update icons when theme changes
     def update_theme(self):
         is_dark_mode = self.palette().window().color().lightness() < 128

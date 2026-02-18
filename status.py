@@ -1,9 +1,9 @@
-from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication, QTimer
 
 
-def update_status(statusbar, message):
+def update_status(statusbar, message, timeout=10000):
         if statusbar:
             statusbar.setText(message)
-            # Force the application to process events to update the UI
             QCoreApplication.processEvents()
+            QTimer.singleShot(timeout, lambda: statusbar.setText(""))
 

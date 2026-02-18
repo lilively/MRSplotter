@@ -559,7 +559,7 @@ class Ui_svPlotter(object):
         self.main_layout.addWidget(self.plot_widget, 1)
 
         # Status bar label (added to plot_layout after canvas in main.py)
-        self.statusbar = QtWidgets.QLabel("Ready — Load files to get started")
+        self.statusbar = QtWidgets.QLabel("Ready - Load files to get started")
         self.statusbar.setObjectName("statusbar")
         self.statusbar.setStyleSheet("""
             QLabel {

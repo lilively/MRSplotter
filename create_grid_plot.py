@@ -173,9 +173,11 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                 
                 # Add vertical reference lines if requested
                 if add_vertical_lines and ppm_list_vertical:
+                    ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+                    update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
                     for item in ppm_list_vertical:
                         add_vertical_line_with_text(ax, item, float(global_maxIntensity), str(item))
-                
+
                 # Add title with position coordinates
                 ax.set_title(f'X:{x_pos}, Y:{y_pos} (n={len(cases_selected)})')
                 
@@ -244,6 +246,8 @@ def create_grid(output_directory, xaxis, dataTable, include_mean, include_sdev,
                                                 label='±σ')
                         
                         if add_vertical_lines:
+                            ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+                            update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
                             for item in ppm_list_vertical:
                                 add_vertical_line_with_text(ax_single, item, float(global_maxIntensity), str(item))
                         

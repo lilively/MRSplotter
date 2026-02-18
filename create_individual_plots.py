@@ -74,7 +74,7 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
         # Get PPM columns
         ppm_cols = sorted(
             [col for col in filtered.columns if col.startswith('PPM_')],
-            key=lambda c: float(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1]), reverse=True
         )
 
         # Determine file ending based on options
@@ -114,6 +114,8 @@ def create_individual_plots(output_directory, xaxis, dataTable, include_mean, in
 
             # Add vertical reference lines if requested
             if add_vertical_lines:
+                ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+                update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
                 for i, item in enumerate(ppm_list_vertical):
                     add_vertical_line_with_text(ax, item, float(global_maxIntensity), str(item))
 

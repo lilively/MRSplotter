@@ -6,7 +6,7 @@ from math import ceil, sqrt
 def add_vertical_line_with_text(ax_or_plt, x_position, y_position, text):
     """
     Adds a vertical line and text annotation at a specified position.
-    
+
     Parameters:
     ax_or_plt: Either a matplotlib axes object or plt
     x_position (float): x-coordinate for the vertical line

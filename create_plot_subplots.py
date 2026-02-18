@@ -153,7 +153,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
         # Get PPM columns sorted numerically
         ppm_cols = sorted(
             [col for col in filtered.columns if col.startswith('PPM_')],
-            key=lambda c: float(c.split('_')[1])
+            key=lambda c: float(c.split('_')[1]), reverse=True
         )
 
         # Prepare data for mean and standard deviation
@@ -199,6 +199,8 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
         
         # Add vertical reference lines if requested
         if add_vertical_lines:
+            ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+            update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
             for i, item in enumerate(ppm_list_vertical):
                 add_vertical_line_with_text(ax, item, float(global_maxIntensity), str(item))
 
@@ -273,6 +275,8 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
                         
 
                         
+                ppm_str = ", ".join(str(p) for p in ppm_list_vertical)
+                update_status(statusbar, f"Adding vertical lines at {ppm_str} ppm")
                 for i, item in enumerate(ppm_list_vertical):
                     add_vertical_line_with_text(ax_single, item, float(global_maxIntensity), str(item))
                 

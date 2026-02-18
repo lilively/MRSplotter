@@ -131,9 +131,12 @@ class MRSPlotter(QMainWindow):
         self.grid_rows = 2
         self.grid_cols = 2
         self.ui.select_mean.stateChanged.connect(self.update_preview)
+        self.ui.select_mean.stateChanged.connect(self.update_vertical_lines_enabled)
         self.ui.select_mean_std.stateChanged.connect(self.update_preview)
         self.ui.each_selected.stateChanged.connect(self.update_preview)
-        self.ui.add_lines_check.stateChanged.connect(self.update_preview)
+        self.ui.each_selected.stateChanged.connect(self.update_vertical_lines_enabled)
+        self.ui.add_lines_check.stateChanged.connect(self.update_preview_if_ppm_entered)
+        self.update_vertical_lines_enabled()
         self.ui.add_lines_is_brainH.stateChanged.connect(self.update_preview)
         self.ui.ppm_one_input.editingFinished.connect(self.update_preview)
         self.ui.ppm_two_input.editingFinished.connect(self.update_preview)
@@ -201,7 +204,7 @@ class MRSPlotter(QMainWindow):
     
     def update_legend_status(self):
             if hasattr(self.toolbar, 'legend_action'):
-                self.legend_visible = self.toolbar.legend_action.isChecked()
+                self.legend_visible = not self.toolbar.legend_action.isChecked()
                 self.update_preview()
 
     def reset_figure(self):
@@ -953,7 +956,7 @@ class MRSPlotter(QMainWindow):
             selected_files, ppm_range, statusbar=self.ui.statusbar
         )
         self.filetype = determine_filetype(selected_files)
-        self.number_of_files = len(self.selected_files)
+        self.number_of_files = len(selected_files)
         self.update_plot_type_options() 
         
 
@@ -976,8 +979,9 @@ class MRSPlotter(QMainWindow):
             # Add labels to the list with random distinctive colors
             for i, label in enumerate(tissueTypes):
                 item = QListWidgetItem(str(label))
-                # Assign a random distinctive color to each label
-                self.color_map[str(label)] = self.get_random_color(i)
+                # Assign a random distinctive color to each label (preserve existing)
+                if str(label) not in self.color_map:
+                    self.color_map[str(label)] = self.get_random_color(i)
                 item.setData(Qt.ItemDataRole.UserRole, self.color_map[str(label)])
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.ui.labels_found.addItem(item)
@@ -1030,6 +1034,20 @@ class MRSPlotter(QMainWindow):
         else:
             self.ui.plot_type.setCurrentIndex(0)
 
+    def update_vertical_lines_enabled(self):
+        """Enable the vertical lines checkbox only when mean or each spectra is selected."""
+        enabled = self.ui.select_mean.isChecked() or self.ui.each_selected.isChecked()
+        self.ui.add_lines_check.setEnabled(enabled)
+        if not enabled:
+            self.ui.add_lines_check.setChecked(False)
+
+    def update_preview_if_ppm_entered(self):
+        """Only update preview when at least one ppm input has a value."""
+        for input_field in [self.ui.ppm_one_input, self.ui.ppm_two_input, self.ui.ppm_three_input]:
+            if input_field.text().strip():
+                self.update_preview()
+                return
+
     def update_preview(self):
         """Update the plot preview based on current settings with improved error handling"""
         # Don't update the preview if no files have been processed yet
@@ -1049,7 +1067,7 @@ class MRSPlotter(QMainWindow):
         
 
         if not (include_mean or plot_individual_plots):
-            update_status(self.ui.statusbar,"Please select mean or each spectra to display")
+            update_status(self.ui.statusbar,"Please select mean or each spectra to display", timeout=5000)
             self.clear_plot()
             self.figure.clear()
             ax = self.figure.add_subplot(111)
