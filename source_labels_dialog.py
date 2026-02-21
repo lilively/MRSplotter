@@ -50,12 +50,13 @@ class SourceLabelsDialog(QDialog):
 
         try:
             df = pd.read_excel(file_path)
+            df.columns = [c.lower() for c in df.columns]
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Failed to read file:\n{e}")
             return
 
-        if 'Repetition' in df.columns:
-            repetitions = sorted(df['Repetition'].unique())
+        if 'repetition' in df.columns:
+            repetitions = sorted(df['repetition'].unique())
             if len(repetitions) > 1:
                 from PyQt6.QtWidgets import QInputDialog
                 items = [str(r) for r in repetitions]
@@ -66,13 +67,12 @@ class SourceLabelsDialog(QDialog):
                 )
                 if not ok:
                     return
-                df = df[df['Repetition'] == int(chosen)]
+                df = df[df['repetition'] == int(chosen)]
 
         self.winning_source_lookup = {}
         try:
-            has_id = 'ID' in df.columns
-            cols_lower = [c.lower() for c in df.columns]
-            has_xy = 'x' in cols_lower and 'y' in cols_lower
+            has_id = 'id' in df.columns
+            has_xy = 'x' in df.columns and 'y' in df.columns
 
             if not has_id:
                 QMessageBox.warning(self, "Error",
@@ -89,7 +89,7 @@ class SourceLabelsDialog(QDialog):
                 # mV: ID + x + y identifies each voxel
                 self.lookup_by = 'ID_xy'
                 for _, row in df.iterrows():
-                    voxel_id = str(row['ID'])
+                    voxel_id = str(row['id'])
                     x, y = int(row['x']), int(row['y'])
                     winning_num = int(row['winning source number'])
                     self.winning_source_lookup[(voxel_id, x, y)] = f"Source {winning_num}"
@@ -97,7 +97,7 @@ class SourceLabelsDialog(QDialog):
                 # SV: ID alone is unique
                 self.lookup_by = 'ID'
                 for _, row in df.iterrows():
-                    voxel_id = str(row['ID'])
+                    voxel_id = str(row['id'])
                     winning_num = int(row['winning source number'])
                     self.winning_source_lookup[voxel_id] = f"Source {winning_num}"
         except Exception as e:
