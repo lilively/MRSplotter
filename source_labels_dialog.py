@@ -71,7 +71,8 @@ class SourceLabelsDialog(QDialog):
         self.winning_source_lookup = {}
         try:
             has_id = 'ID' in df.columns
-            has_xy = 'x' in df.columns and 'y' in df.columns
+            cols_lower = [c.lower() for c in df.columns]
+            has_xy = 'x' in cols_lower and 'y' in cols_lower
 
             if not has_id:
                 QMessageBox.warning(self, "Error",
