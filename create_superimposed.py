@@ -82,7 +82,7 @@ def create_superimposed(output_directory, xaxis, dataTable, include_mean, includ
         try:
             from global_intensities import calculate_y_limit
             global_minIntensity, global_maxIntensity = calculate_y_limit(
-                dataTable[dataTable['TissueType'].isin(selected_tissue_types)], 
+                dataTable[dataTable['TissueType'].isin(selected_tissue_types)],
                 not plot_individual_plots, 
                 include_sdev
             )

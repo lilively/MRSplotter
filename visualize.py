@@ -281,6 +281,12 @@ class Ui_svPlotter(object):
         self.source_labels_btn.setToolTip("Load Labels")
         self.source_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
+        #Calculate labels
+        self.calc_labels_btn = QtWidgets.QPushButton("")
+        self.calc_labels_btn.setObjectName("calc_labels_btn")
+        self.calc_labels_btn.setToolTip("Calculate Labels")
+        self.calc_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
+
         # Add a button to reset label combinations (icon only, same as toolbar)
         self.reset_combinations_btn = QtWidgets.QPushButton()
         self.reset_combinations_btn.setObjectName("reset_combinations_btn")
@@ -293,6 +299,7 @@ class Ui_svPlotter(object):
         combine_buttons_layout.setContentsMargins(0, 0, 0, 0)
         combine_buttons_layout.addWidget(self.combine_labels_btn)
         combine_buttons_layout.addWidget(self.source_labels_btn)
+        combine_buttons_layout.addWidget(self.calc_labels_btn)
         combine_buttons_layout.addWidget(self.reset_combinations_btn)
         combine_buttons_layout.addStretch(1)
 
@@ -345,12 +352,16 @@ class Ui_svPlotter(object):
         self.configure_plot_button.setToolTip("Configure grid layout for subplots")
 
         # Set icon for the source/load labels button
-        add_icon = "add_white.png" if is_dark else "add.png"
+        add_icon = "import_white.png" if is_dark else "import.png"
         self.source_labels_btn.setIcon(QIcon(path.join(res_dir, add_icon)))
 
         # Set icon for the combine labels button
         arrows_icon = "arrows_white.png" if is_dark else "arrows.png"
         self.combine_labels_btn.setIcon(QIcon(path.join(res_dir, arrows_icon)))
+
+        # Set icon for calculate labels button  
+        calc_icon = "add_white.png" if is_dark else "add.png"
+        self.calc_labels_btn.setIcon(QIcon(path.join(res_dir, calc_icon)))
 
         # Set icon for the reset combinations button
         reset_icon = "reset_white.png" if is_dark else "reset.png"

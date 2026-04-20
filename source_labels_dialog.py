@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
 class SourceLabelsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Load Source Labels")
+        self.setWindowTitle("Load labels")
         self.resize(500, 120)
         self.winning_source_lookup = {}
 
@@ -17,14 +17,23 @@ class SourceLabelsDialog(QDialog):
 
         # Source contribution file picker
         file_layout = QHBoxLayout()
-        file_layout.addWidget(QLabel("Source contribution file:"))
+        file_layout.addWidget(QLabel("File with new labels:"))
         self.file_input = QLineEdit()
         self.file_input.setPlaceholderText("Select an Excel file (.xlsx)")
         file_layout.addWidget(self.file_input)
         browse_btn = QPushButton("Browse...")
         browse_btn.clicked.connect(self.browse_file)
+
+        
+
         file_layout.addWidget(browse_btn)
+
         layout.addLayout(file_layout)
+
+        # Add some information about how manual settings work
+        self.manual_note = QLabel("Ensure that the following columns are found: ID and Labels or winning source number")
+        self.manual_note.setStyleSheet("color: gray; font-style: italic;")
+        layout.addWidget(self.manual_note)
 
         # OK / Cancel
         button_box = QDialogButtonBox(
@@ -70,6 +79,7 @@ class SourceLabelsDialog(QDialog):
                 df = df[df['repetition'] == int(chosen)]
 
         self.winning_source_lookup = {}
+        
         try:
             has_id = 'id' in df.columns
             has_xy = 'x' in df.columns and 'y' in df.columns
@@ -85,21 +95,39 @@ class SourceLabelsDialog(QDialog):
             else:
                 is_multivoxel = False
 
+            skipped = 0
+
+            if 'label' in df.columns:
+                labelcol = 'label'
+            elif 'winning source number' in df.columns:
+                labelcol = 'winning source number'
+
             if is_multivoxel:
                 # mV: ID + x + y identifies each voxel
                 self.lookup_by = 'ID_xy'
                 for _, row in df.iterrows():
+                    raw_label = str(row[labelcol]).strip()
+                    if not raw_label or raw_label.lower() == 'nan':
+                        skipped += 1
+                        continue
                     voxel_id = str(row['id'])
                     x, y = int(row['x']), int(row['y'])
-                    winning_num = int(row['winning source number'])
-                    self.winning_source_lookup[(voxel_id, x, y)] = f"Source {winning_num}"
+                    self.winning_source_lookup[(voxel_id, x, y)] = raw_label
             else:
                 # SV: ID alone is unique
                 self.lookup_by = 'ID'
                 for _, row in df.iterrows():
+                    raw_label = str(row[labelcol]).strip()
+                    if not raw_label or raw_label.lower() == 'nan':
+                        skipped += 1
+                        continue
                     voxel_id = str(row['id'])
-                    winning_num = int(row['winning source number'])
-                    self.winning_source_lookup[voxel_id] = f"Source {winning_num}"
+                    self.winning_source_lookup[voxel_id] = raw_label
+
+            if skipped:
+                QMessageBox.information(self, "Info",
+                    f"{skipped} row(s) had no valid entry in {labelcol} column"
+                    f"and will keep their existing label.")
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Failed to parse data:\n{e}")
             return

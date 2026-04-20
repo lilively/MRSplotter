@@ -110,11 +110,24 @@ def read_files(filepath_list, ppm_range,  statusbar=None):
    
     #dataTable['TissueType'] = dataTable['TissueType'].replace('***', 'non-specific')
 
-    # Rename PPM_X to show real value
-    ppm_cols = sorted([col for col in dataTable.columns if col.startswith('PPM_')],
-                      key=lambda x: int(x.split('_')[1]))
-    rename_map = {col: f'PPM_{xaxis[i]:.2f}' for i, col in enumerate(ppm_cols)}
-    dataTable = dataTable.rename(columns=rename_map)
+    # Rename PPM_X to show real value — only when X is an integer index (e.g. from XML).
+    # CSV files already carry real ppm values in their headers (e.g. PPM_4.50)
+    ppm_cols_all = [col for col in dataTable.columns if col.startswith('PPM_')]
+
+    def _is_integer_index(col):
+        suffix = col.split('_', 1)[1]
+        if '.' in suffix:
+            return False
+        try:
+            int(suffix)
+            return True
+        except ValueError:
+            return False
+
+    if ppm_cols_all and all(_is_integer_index(c) for c in ppm_cols_all):
+        ppm_cols = sorted(ppm_cols_all, key=lambda x: int(x.split('_')[1]))
+        rename_map = {col: f'PPM_{xaxis[i]:.2f}' for i, col in enumerate(ppm_cols)}
+        dataTable = dataTable.rename(columns=rename_map)
 
     return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 

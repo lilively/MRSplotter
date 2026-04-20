@@ -7,6 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from combine_labels_dialog import CombineLabelDialog
 from source_labels_dialog import SourceLabelsDialog
+from calculate_labels_dialog import CalcLabelsDialog
 from color_dialog import ColorDelegate
 from navigation_toolbar import CustomNavigationToolbar
 
@@ -113,6 +114,8 @@ class MRSPlotter(QMainWindow):
         self.ui.combine_labels_btn.clicked.connect(self.show_combine_labels_dialog)
         # Connect the source labels button
         self.ui.source_labels_btn.clicked.connect(self.show_source_labels_dialog)
+        # Connect calc source button 
+        self.ui.calc_labels_btn.clicked.connect(self.show_calc_source_labels_dialog)
         # Connect the reset combinations button
         self.ui.reset_combinations_btn.clicked.connect(self.confirm_reset_labels)
 
@@ -356,7 +359,9 @@ class MRSPlotter(QMainWindow):
         try:
             # Store the original dataframe
             self.dataTable = modified_df.copy()
-            
+            if 'TissueType' in self.dataTable.columns:
+                self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
+
             # Update tissue type labels
             if 'TissueType' in self.dataTable.columns:
                 # Get unique tissue types and sort them
@@ -603,8 +608,18 @@ class MRSPlotter(QMainWindow):
 
         self.filtered_dataTable = None
         self.update_preview()
-        update_status(self.ui.statusbar,f"Relabeled {replaced}/{len(self.dataTable)} voxels with source labels")
+        update_status(self.ui.statusbar,f"Relabeled {replaced}/{len(self.dataTable)} voxels with new labels")
 
+    def show_calc_source_labels_dialog(self):
+        """Show dialog to create labels from a contribution file"""
+        if not self.files_processed or self.dataTable is None:
+            update_status(self.ui.statusbar,"Please load and process files first")
+            return
+
+        dialog = CalcLabelsDialog(self)
+        if not dialog.exec():
+            return
+        
     def reset_label_combinations(self):
         """Reset any label combinations and restore original labels"""
         if not self.files_processed or self.dataTable is None:
@@ -651,7 +666,9 @@ class MRSPlotter(QMainWindow):
         
         # Update the dataTable with combined data
         self.dataTable = combined_data
-        
+        if 'TissueType' in self.dataTable.columns:
+            self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
+
         # Update the labels list
         self.ui.labels_found.clear()
         
@@ -961,6 +978,8 @@ class MRSPlotter(QMainWindow):
         self.file_firstPPM, self.file_lastPPM, self.number_of_points, self.xaxis, self.dataTable = read_files(
             selected_files, ppm_range, statusbar=self.ui.statusbar
         )
+        if self.dataTable is not None and 'TissueType' in self.dataTable.columns:
+            self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
         self.filetype = determine_filetype(selected_files)
         self.number_of_files = len(selected_files)
         self.update_plot_type_options() 
