@@ -11,14 +11,9 @@ Open source software for visualizing and generating publication-ready plots from
 
 ## License
 
-This project is licensed under CC BY-NC-SA 4.0 Plus Custom Terms.
 
-- **Attribution**: Please cite this work appropriately
-- **NonCommercial**: Commercial use is not permitted
-- **ShareAlike**: Modifications must use the same license
-- **No Warranty**: Software is provided as-is
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for full details.
 
-See [LICENSE](LICENSE) for full details
  
 # Overview
 
