@@ -1500,5 +1500,6 @@ class MRSPlotter(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(argv)
     window = MRSPlotter()
-    window.show()
+    #window.show()
+    window.showMaximized()
     exit(app.exec())
