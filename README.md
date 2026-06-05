@@ -9,15 +9,16 @@
 
 Open source software for visualizing and generating publication-ready plots from processed <sup>1</sup>H magnetic resonance spectroscopy data.
 
-## License
-
+### License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for full details.
 
  
-# Overview
+## Overview
 
 MRSplotter is a specialized software tool designed for visualizing magnetic resonance spectroscopy data and generating publication-quality figures from various file formats. The application accommodates both single-voxel and multivoxel spectral data files. Users can view and edit the data and subsequently export it in CSV or standardized XML format. This workflow enables modifications, such as adding missing information, before using the files for plotting. MRSPlotter produces a range of plot types, including subplots and overlaid spectra, and exports figures suitable for both publication and presentation.
+
+<h1><img src="resources\GUI.png" alt="MRS Plotter GUI" height="440" style="vertical-align: middle;"> </h1> 
 
 *Full software documentation can be found [here](MRS%20Plotter%20Instructions.pdf).*
 

@@ -137,6 +137,7 @@ class Ui_svPlotter(object):
         
         # Main horizontal layout
         self.main_layout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setObjectName("main_layout")
         
         # Left sidebar for controls
@@ -148,8 +149,11 @@ class Ui_svPlotter(object):
         # Create a QGroupBox instead of just a label
         self.file_select_group = QtWidgets.QGroupBox("Select file(s) for plotting")
         self.file_select_group.setObjectName("file_select_group")
+        self.file_select_group.setContentsMargins(5, 3, 5, 3)
         # Create a layout inside the QGroupBox
         self.file_select_container = QtWidgets.QVBoxLayout(self.file_select_group)
+        self.file_select_container.setContentsMargins(5, 11, 5, 1) 
+        self.file_select_container.setSpacing(0)
 
         self.load_files_btn = QtWidgets.QPushButton("Open Files")
         self.load_files_btn.setObjectName("load_files_btn")
@@ -183,8 +187,11 @@ class Ui_svPlotter(object):
         # Create a QGroupBox instead of just a label
         self.ppm_range_group = QtWidgets.QGroupBox("Select PPM Range for Plotting")
         self.ppm_range_group.setObjectName("ppm_range_group")
-        # Create a layout inside the QGroupBox
+        self.ppm_range_group.setContentsMargins(5, 3, 5, 3)
         self.ppm_range_container = QtWidgets.QVBoxLayout(self.ppm_range_group)
+        self.ppm_range_container.setContentsMargins(5, 15, 5, 1)  
+        self.ppm_range_container.setSpacing(0)
+
 
         # Create the horizontal layout for the PPM inputs
         self.ppm_range_layout = QtWidgets.QHBoxLayout()
@@ -216,23 +223,23 @@ class Ui_svPlotter(object):
         self.sidebar_layout.addWidget(self.ppm_range_group)
 
     #####################
-    #####################
+
 # Modify data Section
 # Create a QGroupBox instead of just a label with reduced margins
         self.modify_data_group = QtWidgets.QGroupBox("")
         self.modify_data_group.setObjectName("modify_data_group")
-        # Use a more compact margin for the group box
-        self.modify_data_group.setContentsMargins(3, 3, 3, 3)
+        self.modify_data_group.setContentsMargins(5, 3, 5, 3)
+        
 
         # Create a layout inside the QGroupBox with reduced spacing
         self.modify_data_container = QtWidgets.QVBoxLayout(self.modify_data_group)
-        self.modify_data_container.setSpacing(2)  # Reduce spacing between elements
-        self.modify_data_container.setContentsMargins(5, 5, 5, 5)  # Smaller margins inside the group
+        self.modify_data_container.setSpacing(0)  
+        self.modify_data_container.setContentsMargins(5, 3, 5, 3)
 
         # Create the data view/edit section
         self.modify_data_layout = QtWidgets.QHBoxLayout()
-        self.modify_data_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
-        self.modify_data_layout.setSpacing(3)  # Minimal spacing between button and label
+        self.modify_data_layout.setContentsMargins(0, 0, 0, 0)  
+        self.modify_data_layout.setSpacing(0)
 
         # Create a small button (on the left)
         self.modify_data_button = QtWidgets.QPushButton('')
@@ -245,7 +252,6 @@ class Ui_svPlotter(object):
         self.modify_data_label.setObjectName("modify_data_label")
         self.modify_data_layout.addWidget(self.modify_data_label)
 
-        # Add the layouts to the QGroupBox's layout (no extra spacing)
         self.modify_data_container.addLayout(self.modify_data_layout)
         
 
@@ -279,7 +285,7 @@ class Ui_svPlotter(object):
         self.source_labels_btn = QtWidgets.QPushButton("")
         self.source_labels_btn.setObjectName("source_labels_btn")
         self.source_labels_btn.setToolTip("Load Labels")
-        self.source_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
+        self.source_labels_btn.setStyleSheet("QPushButton { padding: 1px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
         # Add a button to reset label combinations (icon only, same as toolbar)
         self.reset_combinations_btn = QtWidgets.QPushButton()
@@ -290,7 +296,7 @@ class Ui_svPlotter(object):
         # All buttons in one row, aligned left
         combine_buttons_layout = QtWidgets.QHBoxLayout()
         combine_buttons_layout.setSpacing(0)
-        combine_buttons_layout.setContentsMargins(0, 0, 0, 0)
+        combine_buttons_layout.setContentsMargins(5, 3, 5, 3)
         combine_buttons_layout.addWidget(self.combine_labels_btn)
         combine_buttons_layout.addWidget(self.source_labels_btn)
         combine_buttons_layout.addWidget(self.reset_combinations_btn)
@@ -298,7 +304,8 @@ class Ui_svPlotter(object):
 
         # Add the button layout to the label container
         self.label_container.addLayout(combine_buttons_layout)
-        
+        self.label_container.setContentsMargins(5, 3, 5, 3)
+        self.label_container.setSpacing(0)
        
        
 
@@ -309,6 +316,9 @@ class Ui_svPlotter(object):
 
         # Create a layout inside the QGroupBox
         self.plot_options_container = QtWidgets.QVBoxLayout(self.plot_options_group)
+        self.plot_options_container.setContentsMargins(5, 3, 5, 3)
+        self.plot_options_container.setSpacing(0)
+       
 
         # Create the plot type layout
         self.plot_type_layout = QtWidgets.QHBoxLayout()
@@ -324,7 +334,7 @@ class Ui_svPlotter(object):
         # Create a small button (on the left)
         self.configure_plot_button = QtWidgets.QPushButton('')
         self.configure_plot_button.setObjectName('configure_plot_button')
-        self.configure_plot_button.setFixedSize(40, 24)  # Even smaller button
+        self.configure_plot_button.setFixedSize(40, 24) 
         self.plot_type_layout.addWidget(self.configure_plot_button)
         
         # Connect plot type to control enabled state of configure button
@@ -368,27 +378,34 @@ class Ui_svPlotter(object):
         #self.each_selected.setChecked(True) 
         self.plot_options_container.addWidget(self.each_selected)
 
+        self.mean_std_layout = QtWidgets.QHBoxLayout()
+        self.mean_std_layout.setContentsMargins(0, 0, 0, 0)
+        self.mean_std_layout.setSpacing(2)
+
+        self.options_grid_layout = QtWidgets.QGridLayout()
+        self.options_grid_layout.setContentsMargins(0, 0, 0, 0)
+        self.options_grid_layout.setSpacing(2)
+
         self.select_mean = QtWidgets.QCheckBox("Means by tumor label")
         self.select_mean.setObjectName("select_mean")
-        self.plot_options_container.addWidget(self.select_mean)
-
-        self.select_mean_std = QtWidgets.QCheckBox("Add Standard deviation")
+        self.select_mean_std = QtWidgets.QCheckBox("±Std")
         self.select_mean_std.setObjectName("select_mean_std")
-        self.plot_options_container.addWidget(self.select_mean_std)
+
+        self.add_lines_check = QtWidgets.QCheckBox("Add vertical lines")
+        self.add_lines_is_brainH = QtWidgets.QCheckBox("isBrainH")
+        self.add_lines_is_brainH.setObjectName("add_lines_is_brainH")
+
+        self.options_grid_layout.addWidget(self.select_mean, 0, 0)
+        self.options_grid_layout.addWidget(self.select_mean_std, 0, 1)
+        self.options_grid_layout.addWidget(self.add_lines_check, 1, 0)
+        self.options_grid_layout.addWidget(self.add_lines_is_brainH, 1, 1)
+
+        self.plot_options_container.addLayout(self.options_grid_layout)
 
         # Initially disable it if mean is not selected
         self.select_mean_std.setEnabled(self.select_mean.isChecked())
         # Connect the mean checkbox state to control the enabled state of std dev
         self.select_mean.stateChanged.connect(self.update_std_dev_enabled)
-
-        # ####
-        self.add_lines_layout = QtWidgets.QHBoxLayout()
-        self.add_lines_label = QtWidgets.QLabel("Add vertical lines")
-        self.add_lines_label.setObjectName("add_lines_label")
-        self.add_lines_check = QtWidgets.QCheckBox("Add vertical lines")
-        self.add_lines_is_brainH = QtWidgets.QCheckBox("isBrainH")
-        self.add_lines_layout.addWidget(self.add_lines_check )
-        self.add_lines_layout.addWidget(self.add_lines_is_brainH)
 
         # Initially disable isBrainH checkbox
         self.add_lines_is_brainH.setEnabled(False)
@@ -396,8 +413,7 @@ class Ui_svPlotter(object):
         self.add_lines_check.stateChanged.connect(self.update_is_brain_h_enabled)
         # Connect the isBrainH checkbox to set default ppm values
         self.add_lines_is_brainH.stateChanged.connect(self.update_ppm_values)
-
-        self.plot_options_container.addLayout(self.add_lines_layout)
+        
 
         self.ppm_plot_layout = QtWidgets.QHBoxLayout()
         self.plot_options_container.addLayout(self.ppm_plot_layout)
@@ -449,6 +465,7 @@ class Ui_svPlotter(object):
         self.select_outdir_btn = QtWidgets.QPushButton("Select Directory")
         self.select_outdir_btn.setObjectName("select_outdir_btn")
         self.select_outdir_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 90px; max-width: 100px; }")
+        self.output_group_container.setContentsMargins(5, 3, 5, 3)
         self.outdir_input = QtWidgets.QLineEdit()
         self.outdir_input.setObjectName("outdir_input")
 
@@ -476,7 +493,10 @@ class Ui_svPlotter(object):
         
         # Create a layout inside the QGroupBox
         self.export_options_container = QtWidgets.QVBoxLayout(self.export_options_group)
+        self.export_options_container.setContentsMargins(5, 3, 5, 3)
+        self.export_options_container.setSpacing(0)
        
+
         # Create the quality layout
         self.export_quality_layout = QtWidgets.QHBoxLayout()
         self.export_quality_label = QtWidgets.QLabel("Select resolution for export")
@@ -563,7 +583,7 @@ class Ui_svPlotter(object):
         self.statusbar.setObjectName("statusbar")
         self.statusbar.setStyleSheet("""
             QLabel {
-                background-color: rgba(1, 1, 1, 0.08);
+                background-color: rgba(1, 1, 1, 0.01);
                 color: #383B96;
                 font-size: 12px;
                 font-weight: bold;
@@ -606,7 +626,7 @@ class Ui_svPlotter(object):
         self.plot_type_label.setText(_translate("svPlotter", "Select a plot style"))
         self.each_selected.setText(_translate("svPlotter", "Each selected spectra"))
         self.select_mean.setText(_translate("svPlotter", "Means by tumor label"))
-        self.select_mean_std.setText(_translate("svPlotter", "Add Standard deviation"))
+        self.select_mean_std.setText(_translate("svPlotter", "±Std"))
         self.export_displayed_plot.setText(_translate("svPlotter", "Export plot(s)"))
         self.export_each_subplot.setText(_translate("svPlotter", "Export individual subplot(s)"))
         self.export_individual_plot.setText(_translate("svPlotter", "Export each voxel on individual plot"))
@@ -620,6 +640,7 @@ if __name__ == "__main__":
     svPlotter = QtWidgets.QMainWindow()
     ui = Ui_svPlotter()
     ui.setupUi(svPlotter)
-    svPlotter.show()
+    #svPlotter.show()
+    svPlotter.showMaximized()
     sys.exit(app.exec())
 
