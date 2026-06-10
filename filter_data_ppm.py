@@ -11,7 +11,7 @@ def get_PPM(ppm, NPoint, MaxPPM, MinPPM):
         if not (MinPPM <= ppm <= MaxPPM):
             raise ValueError(f"PPM {ppm} is out of range ({MinPPM}, {MaxPPM}).")
         
-        delta = abs(MaxPPM - MinPPM) / (NPoint)
+        delta = abs(MaxPPM - MinPPM) / (NPoint - 1)
         point = round((MaxPPM - ppm) / delta)
         # point = max(0, min(point, NPoint - 1))
         return point

@@ -20,7 +20,7 @@ MRSplotter is a specialized software tool designed for visualizing magnetic reso
 
 <h1><img src="resources\GUI.png" alt="MRS Plotter GUI" height="440" style="vertical-align: middle;"> </h1> 
 
-*Full software documentation can be found [here](MRS%20Plotter%20Instructions.pdf).*
+*Full software documentation can be found [here](MRSplotterInstructions.pdf).*
 
 ## Windows Installation
 
