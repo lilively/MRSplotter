@@ -58,6 +58,7 @@ python main.py
 - numpy >= 1.21.0
 - pandas >= 1.3.0
 - regex >= 2022.1.18
+- openpyxl >=3.1.0
 
 Install dependencies:
 ```bash
