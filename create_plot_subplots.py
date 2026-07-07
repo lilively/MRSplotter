@@ -271,7 +271,8 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
                                          mean_intensity + std_intensity,
                                          color=mean_color,
                                          alpha=0.2,
-                                         label='± Std Dev')
+                                         label='± Std Dev',
+                                         clip_on=True)
                         
 
                         
@@ -309,7 +310,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
 
 
     try:
-        fig.tight_layout()
+        fig.tight_layout(w_pad=2.0)
     except:
         pass 
     
@@ -318,7 +319,7 @@ def create_subplot(output_directory, xaxis, dataTable, include_mean, include_sde
         try:
             # Ensure output directory exists
             makedirs(output_directory, exist_ok=True)
-            
+            fig.tight_layout(w_pad=2.0)
             # Save the figure
             plt.savefig(outPath, dpi=dpi)
             

@@ -23,6 +23,7 @@ class CalcLabelsDialog(QDialog):
         self.ppm_range = parent.valid_ppm_range
         self.dataTable = parent.dataTable
         self.statusbar = parent.ui.statusbar
+        self.number_of_points = parent.number_of_points
 
         layout = QVBoxLayout(self)
 
@@ -81,7 +82,7 @@ class CalcLabelsDialog(QDialog):
         self.corr_checkbox.toggled.connect(self._update_calc_enabled)
 
         # Add some information about how manual settings work
-        self.manual_note = QLabel("Ensure that the following columns are found: ID and Labels or winning source number")
+        self.manual_note = QLabel("Ensure that the ppm ranges match!")
         self.manual_note.setStyleSheet("color: gray; font-style: italic;")
         layout.addWidget(self.manual_note)
 
@@ -104,7 +105,7 @@ class CalcLabelsDialog(QDialog):
 
     def browse_file(self):
         paths, _ = QFileDialog.getOpenFileNames(
-        self, "Select Source Contribution File(s)", "",
+        self, "Select Source File(s)", "",
         "Supported Files (*.csv *.xml);;CSV Files (*.csv);;XML Files (*.xml);;All Files (*)"
         )
         
@@ -120,9 +121,14 @@ class CalcLabelsDialog(QDialog):
             self.label_number_of_points, self.label_xaxis, \
             self.source_dataTable = read_files(
                 file_paths, self.ppm_range, statusbar=None
-            )
+            ) 
+
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Failed to read file:\n{e}")
+            return
+
+        if self.number_of_points != self.label_number_of_points:
+            QMessageBox.warning(self, "Error", "Source is not the same size as input data!")
             return
 
         self.placeholder_text.set_visible(False)
