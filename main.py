@@ -119,8 +119,8 @@ class MRSPlotter(QMainWindow):
         # Connect the reset combinations button
         self.ui.reset_combinations_btn.clicked.connect(self.confirm_reset_labels)
 
-        self.ui.first_ppm_input.editingFinished.connect(self.update_preview)
-        self.ui.last_ppm_input.editingFinished.connect(self.update_preview)
+        self.ui.first_ppm_input.editingFinished.connect(self.update_data_and_preview)
+        self.ui.last_ppm_input.editingFinished.connect(self.update_data_and_preview)
         
         # Plot options
         # Connect the configure plot button
@@ -920,13 +920,13 @@ class MRSPlotter(QMainWindow):
                     elif original_last_ppm != self.valid_ppm_range[1]:
                         update_status(self.ui.statusbar,
                             f"Using last PPM {self.valid_ppm_range[1]} from file (input was out of range)")
-                    
-                # For PPM range adjustment:
-                self.show_message_dialog(
-                "PPM Range Adjusted",
-                "The PPM range has been adjusted to fit data boundaries.",
-                f"Using range: {self.valid_ppm_range[0]:.2f} ppm to {self.valid_ppm_range[1]:.2f} ppm", QMessageBox.Icon.Information
-                )
+
+                    # For PPM range adjustment:
+                    self.show_message_dialog(
+                    "PPM Range Adjusted",
+                    "The PPM range has been adjusted to fit data boundaries.",
+                    f"Using range: {self.valid_ppm_range[0]:.2f} ppm to {self.valid_ppm_range[1]:.2f} ppm", QMessageBox.Icon.Information
+                    )
 
                 # Update the input fields separately
                 self.ui.first_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}")

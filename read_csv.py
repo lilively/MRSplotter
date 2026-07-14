@@ -221,6 +221,29 @@ def read_structured_csv(file_path, ppm_range):
     if ppm_range is not None and validated_ppm_range is None:
         print(f"Warning: PPM range validation failed for {ppm_range}")
 
+    if validated_ppm_range is not None and not data_table.empty:
+        min_ppm, max_ppm = validated_ppm_range
+
+        def _col_ppm(col):
+            try:
+                return float(str(col).split('_', 1)[1])
+            except (IndexError, ValueError):
+                return None
+
+        ppm_cols = [c for c in data_table.columns if str(c).startswith('PPM_')]
+        col_ppms = {c: _col_ppm(c) for c in ppm_cols}
+        drop_cols = [c for c, v in col_ppms.items() if v is None or v < min_ppm or v > max_ppm]
+        keep_cols = [c for c in ppm_cols if c not in drop_cols]
+
+        if drop_cols:
+            data_table = data_table.drop(columns=drop_cols)
+
+        if keep_cols:
+            kept_ppms = sorted((col_ppms[c] for c in keep_cols), reverse=True)
+            xaxis = array(kept_ppms)
+            firstPPM = min(kept_ppms)
+            lastPPM = max(kept_ppms)
+            number_of_points = len(kept_ppms)
 
     return firstPPM, lastPPM, number_of_points, xaxis, data_table
 
