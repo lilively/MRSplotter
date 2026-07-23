@@ -1293,7 +1293,19 @@ class MRSPlotter(QMainWindow):
             return
                 
         # Get output directory
-        self.output_directory = self.ui.outdir_input.text()
+        #strip "'"
+        raw = self.ui.outdir_input.text().strip()
+        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ('"', "'"):
+            raw = raw[1:-1].strip()
+        self.output_directory = raw
+
+        if not path.isdir(self.output_directory):
+            update_status(
+                self.ui.statusbar,
+                f"Output directory does not exist: {self.output_directory}"
+            )
+            return
+
         if not self.output_directory:
             update_status(self.ui.statusbar,"Please select an output directory for saving")
             return

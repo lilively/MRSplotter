@@ -354,7 +354,8 @@ class Ui_svPlotter(object):
         # Detect dark mode: if the window background is dark, use white icons
         res_dir = path.join(path.dirname(path.abspath(__file__)), "resources")
         bg_color = QtWidgets.QApplication.instance().palette().color(QPalette.ColorRole.Window)
-        is_dark = bg_color.lightnessF() < 0.5
+        self.is_dark = bg_color.lightnessF() < 0.5
+        is_dark = self.is_dark
 
         # Set icon for the configure button
         settings_icon = "icons8-settings_white.svg" if is_dark else "icons8-settings.svg"
@@ -592,15 +593,15 @@ class Ui_svPlotter(object):
         # Status bar label (added to plot_layout after canvas in main.py)
         self.statusbar = QtWidgets.QLabel("Ready - Load files to get started")
         self.statusbar.setObjectName("statusbar")
-        self.statusbar.setStyleSheet("""
-            QLabel {
-                background-color: rgba(1, 1, 1, 0.01);
-                color: #383B96;
+        status_color = "#B2B4E7" if self.is_dark else "#383B96"
+        self.statusbar.setStyleSheet(f"""
+            QLabel {{
+                background: transparent;
+                color: {status_color};
                 font-size: 12px;
                 font-weight: bold;
                 padding: 6px 10px;
-                
-            }
+            }}
         """)
         self.statusbar.setWordWrap(True)
 
