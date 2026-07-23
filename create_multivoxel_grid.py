@@ -175,7 +175,24 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
     
         # Create grid layout
         gs = GridSpec(ylen, xlen, figure=fig, hspace=0.0, wspace=0.0)
-        fig.subplots_adjust(top=0.95)
+        fig_w, fig_h = fig.get_size_inches()
+        spine_lw   = 0.8
+        half_lw_in = (spine_lw / 2) / 72.0
+        lx = half_lw_in / fig_w
+        ly = half_lw_in / fig_h
+
+        has_title = legend_visible and filename != 'multivoxel'
+        title_in  = 0.35 if has_title else 0.0
+        ty        = title_in / fig_h
+
+        fig.subplots_adjust(left=lx, right=1 - lx,
+                            bottom=ly, top=1 - ly - ty,
+                            wspace=0.0, hspace=0.0)
+
+        if has_title:
+            fig.suptitle(filename, fontweight='bold', fontsize=12,
+                         y=1 - (title_in * 0.5) / fig_h, va='center')
+
         counter = 0
         
         for y_idx, y_pos in enumerate(range(ymin, ymax+1)): 
@@ -202,7 +219,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                     if total_subplots > 16:
                         font_size = 6
                         x_al, y_al = 0.02, 0.98
-                        LW=0.5
+                        LW=0.9
                     elif total_subplots > 9:
                         font_size = 7
                         x_al, y_al = 0.03, 0.92
@@ -271,7 +288,7 @@ def create_multivoxel_plot(output_directory, xaxis, dataTable, include_mean, inc
                 update_status(statusbar, f"Saving {filename}...")
 
                 # Save the figure
-                fig.savefig(outPath, dpi=dpi, bbox_inches='tight', pad_inches=0)
+                fig.savefig(outPath, dpi=dpi, pad_inches=0)
 
                 exported_count += 1
 
