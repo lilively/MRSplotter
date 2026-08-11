@@ -21,7 +21,7 @@ class CalcLabelsDialog(QDialog):
 
         #Get
         self.ppm_range = parent.valid_ppm_range
-        self.dataTable = parent.dataTable
+        self.dataTable = parent.filtered_dataTable
         self.statusbar = parent.ui.statusbar
         self.number_of_points = parent.number_of_points
 
@@ -202,7 +202,14 @@ class CalcLabelsDialog(QDialog):
             return
 
         parent = self.parent()
-        parent.dataTable = self.modified_dataTable
+
+        # Merge the modified (filtered/selected) rows back into the full dataTable
+        # by index, instead of replacing it, so unselected rows are preserved.
+        for col in self.modified_dataTable.columns:
+            if col not in parent.dataTable.columns:
+                parent.dataTable[col] = float('nan')
+        parent.dataTable.loc[self.modified_dataTable.index, self.modified_dataTable.columns] = self.modified_dataTable
+
         if 'TissueType' in parent.dataTable.columns:
             parent.dataTable['TissueType'] = parent.dataTable['TissueType'].astype(str)
 

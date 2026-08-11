@@ -3,7 +3,7 @@ from numpy import asarray
 from scipy.stats import pearsonr
 
 
-def calculate_labels(dataTable, soucreTable, th, sbar):
+def calculate_labels(dataTable, soucreTable, th, sbar, relabel_only=None):
     ppm_columns_data = sorted(
         [c for c in dataTable.columns if c.startswith('PPM_')],
         key=lambda x: float(x.split('_')[1])
@@ -49,7 +49,7 @@ def calculate_labels(dataTable, soucreTable, th, sbar):
         winner_corr = correlations[winner]
         dataTable.at[idx, 'winning corr'] = round(float(winner_corr), 4)
 
-        if winner_corr >= th:
+        if winner_corr >= th and (relabel_only is None or str(row.get('TissueType', '')) in relabel_only):
             dataTable.at[idx, 'TissueType'] = str(winner)
             replaced += 1
 

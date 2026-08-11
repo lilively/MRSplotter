@@ -616,6 +616,14 @@ class MRSPlotter(QMainWindow):
             update_status(self.ui.statusbar,"Please load and process files first")
             return
 
+        # Rebuild filtered_dataTable from the current label selection so it's
+        # guaranteed to exist and reflect what's actually selected/displayed.
+        selected_labels = [item.text() for item in self.ui.labels_found.selectedItems()]
+        if selected_labels:
+            self.filtered_dataTable = self.dataTable[self.dataTable['TissueType'].isin(selected_labels)].copy()
+        else:
+            self.filtered_dataTable = self.dataTable.copy()
+
         dialog = CalcLabelsDialog(self)
         if not dialog.exec():
             return
