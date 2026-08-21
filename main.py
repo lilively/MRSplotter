@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QEvent, QSettings
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
 from combine_labels_dialog import CombineLabelDialog
 from source_labels_dialog import SourceLabelsDialog
 from calculate_labels_dialog import CalcLabelsDialog
@@ -14,6 +13,8 @@ from navigation_toolbar import CustomNavigationToolbar
 from PyQt6.QtGui import QColor, QIcon
 from visualize import Ui_svPlotter
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg')
 from pandas import notna
 from random import randint
 from os import path
@@ -1520,6 +1521,6 @@ class MRSPlotter(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(argv)
     window = MRSPlotter()
-    #window.show()
-    window.showMaximized()
+    window.show()
+    #window.showMaximized()
     exit(app.exec())

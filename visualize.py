@@ -126,8 +126,8 @@ class Ui_svPlotter(object):
 
     def setupUi(self, svPlotter):
         svPlotter.setObjectName("svPlotter")
-        svPlotter.resize(1200, 900)
-        svPlotter.setMinimumSize(800, 900)
+        svPlotter.resize(1000, 710)
+        svPlotter.setMinimumSize(650, 500)
         #svPlotter.setMaximumSize(2500, 1350)
 
         # Create central widget
@@ -535,7 +535,7 @@ class Ui_svPlotter(object):
         self.export_individual_plot.setObjectName("export_individual")
         self.export_options_container.addWidget(self.export_individual_plot)
 
-        self.export_multivoxel_grid = QtWidgets.QCheckBox("Export processed multivoxel grids")
+        self.export_multivoxel_grid = QtWidgets.QCheckBox("Export all multivoxel grid")
         self.export_multivoxel_grid.setObjectName("export_multivoxel")
         self.export_options_container.addWidget(self.export_multivoxel_grid)
         self.export_multivoxel_grid.setEnabled(False)
@@ -652,7 +652,6 @@ if __name__ == "__main__":
     svPlotter = QtWidgets.QMainWindow()
     ui = Ui_svPlotter()
     ui.setupUi(svPlotter)
-    #svPlotter.show()
-    svPlotter.showMaximized()
+    svPlotter.show()
     sys.exit(app.exec())
 
