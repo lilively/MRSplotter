@@ -46,6 +46,7 @@ def apply_common_plot_settings(min_intensity, max_intensity, ppm_range,legend_vi
    
     # Set y-axis limits
     ax.set_ylim(min_intensity, max_intensity)
+    # ax.set_clip_on(True)
    
     # Set x-axis limits - invert because ppm decreases from left to right
     if ppm_range:

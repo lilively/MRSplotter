@@ -126,8 +126,8 @@ class Ui_svPlotter(object):
 
     def setupUi(self, svPlotter):
         svPlotter.setObjectName("svPlotter")
-        svPlotter.resize(1200, 900)
-        svPlotter.setMinimumSize(800, 900)
+        svPlotter.resize(1000, 710)
+        svPlotter.setMinimumSize(650, 500)
         #svPlotter.setMaximumSize(2500, 1350)
 
         # Create central widget
@@ -287,6 +287,12 @@ class Ui_svPlotter(object):
         self.source_labels_btn.setToolTip("Load Labels")
         self.source_labels_btn.setStyleSheet("QPushButton { padding: 1px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
 
+        #Calculate labels
+        self.calc_labels_btn = QtWidgets.QPushButton("")
+        self.calc_labels_btn.setObjectName("calc_labels_btn")
+        self.calc_labels_btn.setToolTip("Calculate Labels")
+        self.calc_labels_btn.setStyleSheet("QPushButton { padding: 3px; min-width: 20px; max-width: 20px; min-height: 20px; max-height: 20px; }")
+
         # Add a button to reset label combinations (icon only, same as toolbar)
         self.reset_combinations_btn = QtWidgets.QPushButton()
         self.reset_combinations_btn.setObjectName("reset_combinations_btn")
@@ -299,6 +305,7 @@ class Ui_svPlotter(object):
         combine_buttons_layout.setContentsMargins(5, 3, 5, 3)
         combine_buttons_layout.addWidget(self.combine_labels_btn)
         combine_buttons_layout.addWidget(self.source_labels_btn)
+        combine_buttons_layout.addWidget(self.calc_labels_btn)
         combine_buttons_layout.addWidget(self.reset_combinations_btn)
         combine_buttons_layout.addStretch(1)
 
@@ -347,7 +354,8 @@ class Ui_svPlotter(object):
         # Detect dark mode: if the window background is dark, use white icons
         res_dir = path.join(path.dirname(path.abspath(__file__)), "resources")
         bg_color = QtWidgets.QApplication.instance().palette().color(QPalette.ColorRole.Window)
-        is_dark = bg_color.lightnessF() < 0.5
+        self.is_dark = bg_color.lightnessF() < 0.5
+        is_dark = self.is_dark
 
         # Set icon for the configure button
         settings_icon = "icons8-settings_white.svg" if is_dark else "icons8-settings.svg"
@@ -355,12 +363,16 @@ class Ui_svPlotter(object):
         self.configure_plot_button.setToolTip("Configure grid layout for subplots")
 
         # Set icon for the source/load labels button
-        add_icon = "add_white.png" if is_dark else "add.png"
+        add_icon = "import_white.png" if is_dark else "import.png"
         self.source_labels_btn.setIcon(QIcon(path.join(res_dir, add_icon)))
 
         # Set icon for the combine labels button
         arrows_icon = "arrows_white.png" if is_dark else "arrows.png"
         self.combine_labels_btn.setIcon(QIcon(path.join(res_dir, arrows_icon)))
+
+        # Set icon for calculate labels button  
+        calc_icon = "add_white.png" if is_dark else "add.png"
+        self.calc_labels_btn.setIcon(QIcon(path.join(res_dir, calc_icon)))
 
         # Set icon for the reset combinations button
         reset_icon = "reset_white.png" if is_dark else "reset.png"
@@ -523,7 +535,7 @@ class Ui_svPlotter(object):
         self.export_individual_plot.setObjectName("export_individual")
         self.export_options_container.addWidget(self.export_individual_plot)
 
-        self.export_multivoxel_grid = QtWidgets.QCheckBox("Export processed multivoxel grids")
+        self.export_multivoxel_grid = QtWidgets.QCheckBox("Export all multivoxel grid")
         self.export_multivoxel_grid.setObjectName("export_multivoxel")
         self.export_options_container.addWidget(self.export_multivoxel_grid)
         self.export_multivoxel_grid.setEnabled(False)
@@ -581,15 +593,15 @@ class Ui_svPlotter(object):
         # Status bar label (added to plot_layout after canvas in main.py)
         self.statusbar = QtWidgets.QLabel("Ready - Load files to get started")
         self.statusbar.setObjectName("statusbar")
-        self.statusbar.setStyleSheet("""
-            QLabel {
-                background-color: rgba(1, 1, 1, 0.01);
-                color: #383B96;
+        status_color = "#B2B4E7" if self.is_dark else "#383B96"
+        self.statusbar.setStyleSheet(f"""
+            QLabel {{
+                background: transparent;
+                color: {status_color};
                 font-size: 12px;
                 font-weight: bold;
                 padding: 6px 10px;
-                
-            }
+            }}
         """)
         self.statusbar.setWordWrap(True)
 
@@ -640,7 +652,6 @@ if __name__ == "__main__":
     svPlotter = QtWidgets.QMainWindow()
     ui = Ui_svPlotter()
     ui.setupUi(svPlotter)
-    #svPlotter.show()
-    svPlotter.showMaximized()
+    svPlotter.show()
     sys.exit(app.exec())
 

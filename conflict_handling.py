@@ -72,3 +72,34 @@ def validate_ppm_range(ppm_range, firstPPM, lastPPM, statusbar=None, parent=None
         msg.exec()
 
     return tuple(valid_range)
+
+
+def check_positions(dataTable):
+    x_candidates = ['X_pos', 'Xpos', 'x']
+    y_candidates = ['Y_pos', 'Ypos', 'y']
+
+    x_col = next((c for c in x_candidates if c in dataTable.columns), None)
+    y_col = next((c for c in y_candidates if c in dataTable.columns), None)
+
+    missing = []
+    if x_col is None:
+        missing.append(f"x-coordinate (tried {x_candidates})")
+    if y_col is None:
+        missing.append(f"y-coordinate (tried {y_candidates})")
+
+    if missing:
+        raise KeyError(
+            f"Missing column(s): {'; '.join(missing)}. "
+            f"Available columns: {dataTable.columns.tolist()}"
+        )
+
+    return x_col, y_col
+
+def get_positions(dataTable, labelTable):
+    """Try dataTable first, fall back to labelTable."""
+    try:
+        x_col, y_col = check_positions(dataTable)
+        return dataTable, x_col, y_col
+    except KeyError:
+        x_col, y_col = check_positions(labelTable)  # raises if labelTable also lacks them
+        return labelTable, x_col, y_col

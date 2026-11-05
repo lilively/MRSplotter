@@ -4,15 +4,17 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QEvent, QSettings
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
 from combine_labels_dialog import CombineLabelDialog
 from source_labels_dialog import SourceLabelsDialog
+from calculate_labels_dialog import CalcLabelsDialog
 from color_dialog import ColorDelegate
 from navigation_toolbar import CustomNavigationToolbar
 
 from PyQt6.QtGui import QColor, QIcon
 from visualize import Ui_svPlotter
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg')
 from pandas import notna
 from random import randint
 from os import path
@@ -113,11 +115,13 @@ class MRSPlotter(QMainWindow):
         self.ui.combine_labels_btn.clicked.connect(self.show_combine_labels_dialog)
         # Connect the source labels button
         self.ui.source_labels_btn.clicked.connect(self.show_source_labels_dialog)
+        # Connect calc source button 
+        self.ui.calc_labels_btn.clicked.connect(self.show_calc_source_labels_dialog)
         # Connect the reset combinations button
         self.ui.reset_combinations_btn.clicked.connect(self.confirm_reset_labels)
 
-        self.ui.first_ppm_input.editingFinished.connect(self.update_preview)
-        self.ui.last_ppm_input.editingFinished.connect(self.update_preview)
+        # self.ui.first_ppm_input.editingFinished.connect(self.update_data_and_preview)
+        # self.ui.last_ppm_input.editingFinished.connect(self.update_data_and_preview)
         
         # Plot options
         # Connect the configure plot button
@@ -356,7 +360,9 @@ class MRSPlotter(QMainWindow):
         try:
             # Store the original dataframe
             self.dataTable = modified_df.copy()
-            
+            if 'TissueType' in self.dataTable.columns:
+                self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
+
             # Update tissue type labels
             if 'TissueType' in self.dataTable.columns:
                 # Get unique tissue types and sort them
@@ -603,23 +609,45 @@ class MRSPlotter(QMainWindow):
 
         self.filtered_dataTable = None
         self.update_preview()
-        update_status(self.ui.statusbar,f"Relabeled {replaced}/{len(self.dataTable)} voxels with source labels")
+        update_status(self.ui.statusbar,f"Relabeled {replaced}/{len(self.dataTable)} voxels with new labels")
 
+    def show_calc_source_labels_dialog(self):
+        """Show dialog to create labels from a contribution file"""
+        if not self.files_processed or self.dataTable is None:
+            update_status(self.ui.statusbar,"Please load and process files first")
+            return
+
+        # Rebuild filtered_dataTable from the current label selection so it's
+        # guaranteed to exist and reflect what's actually selected/displayed.
+        selected_labels = [item.text() for item in self.ui.labels_found.selectedItems()]
+        if selected_labels:
+            self.filtered_dataTable = self.dataTable[self.dataTable['TissueType'].isin(selected_labels)].copy()
+        else:
+            self.filtered_dataTable = self.dataTable.copy()
+
+        dialog = CalcLabelsDialog(self)
+        if not dialog.exec():
+            return
+        
     def reset_label_combinations(self):
         """Reset any label combinations and restore original labels"""
         if not self.files_processed or self.dataTable is None:
-            update_status(self.ui.statusbar,"No data to reset")
+            update_status(self.ui.statusbar, "No data to reset")
             return
-        
+
+        # Restore the applied range so unconfirmed edits in the boxes are ignored
+        if hasattr(self, 'valid_ppm_range'):
+            self.ui.first_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}")
+            self.ui.last_ppm_input.setText(f"{self.valid_ppm_range[1]:.2f}")
+
         # Reload the original data from the selected files
         success = self.load_data_from_files(self.selected_files)
-        
+
         if success:
-            update_status(self.ui.statusbar,"Label combinations reset to original")
-            # This will also update the labels list and colors
+            update_status(self.ui.statusbar, "Label combinations reset to original")
             self.update_preview()
         else:
-            update_status(self.ui.statusbar,"Failed to reset label combinations")
+            update_status(self.ui.statusbar, "Failed to reset label combinations")
 
     def process_label_combinations(self, combinations):
         """Process the label combinations and update the UI"""
@@ -651,7 +679,9 @@ class MRSPlotter(QMainWindow):
         
         # Update the dataTable with combined data
         self.dataTable = combined_data
-        
+        if 'TissueType' in self.dataTable.columns:
+            self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
+
         # Update the labels list
         self.ui.labels_found.clear()
         
@@ -903,13 +933,13 @@ class MRSPlotter(QMainWindow):
                     elif original_last_ppm != self.valid_ppm_range[1]:
                         update_status(self.ui.statusbar,
                             f"Using last PPM {self.valid_ppm_range[1]} from file (input was out of range)")
-                    
-                # For PPM range adjustment:
-                self.show_message_dialog(
-                "PPM Range Adjusted",
-                "The PPM range has been adjusted to fit data boundaries.",
-                f"Using range: {self.valid_ppm_range[0]:.2f} ppm to {self.valid_ppm_range[1]:.2f} ppm", QMessageBox.Icon.Information
-                )
+
+                    # For PPM range adjustment:
+                    self.show_message_dialog(
+                    "PPM Range Adjusted",
+                    "The PPM range has been adjusted to fit data boundaries.",
+                    f"Using range: {self.valid_ppm_range[0]:.2f} ppm to {self.valid_ppm_range[1]:.2f} ppm", QMessageBox.Icon.Information
+                    )
 
                 # Update the input fields separately
                 self.ui.first_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}")
@@ -961,6 +991,8 @@ class MRSPlotter(QMainWindow):
         self.file_firstPPM, self.file_lastPPM, self.number_of_points, self.xaxis, self.dataTable = read_files(
             selected_files, ppm_range, statusbar=self.ui.statusbar
         )
+        if self.dataTable is not None and 'TissueType' in self.dataTable.columns:
+            self.dataTable['TissueType'] = self.dataTable['TissueType'].astype(str)
         self.filetype = determine_filetype(selected_files)
         self.number_of_files = len(selected_files)
         self.update_plot_type_options() 
@@ -1274,7 +1306,19 @@ class MRSPlotter(QMainWindow):
             return
                 
         # Get output directory
-        self.output_directory = self.ui.outdir_input.text()
+        #strip "'"
+        raw = self.ui.outdir_input.text().strip()
+        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ('"', "'"):
+            raw = raw[1:-1].strip()
+        self.output_directory = raw
+
+        if not path.isdir(self.output_directory):
+            update_status(
+                self.ui.statusbar,
+                f"Output directory does not exist: {self.output_directory}"
+            )
+            return
+
         if not self.output_directory:
             update_status(self.ui.statusbar,"Please select an output directory for saving")
             return
@@ -1481,6 +1525,6 @@ class MRSPlotter(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(argv)
     window = MRSPlotter()
-    #window.show()
-    window.showMaximized()
+    window.show()
+    #window.showMaximized()
     exit(app.exec())
