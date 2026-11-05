@@ -125,8 +125,10 @@ def read_files(filepath_list, ppm_range,  statusbar=None):
 
     if ppm_cols_all and all(_is_integer_index(c) for c in ppm_cols_all):
         ppm_cols = sorted(ppm_cols_all, key=lambda x: int(x.split('_')[1]))
-        rename_map = {col: f'PPM_{xaxis[i]:.2f}' for i, col in enumerate(ppm_cols)}
+        rename_map = {col: f'PPM_{xaxis[i]:.6f}' for i, col in enumerate(ppm_cols)}
         dataTable = dataTable.rename(columns=rename_map)
+
+    dataTable.to_csv('JMRUI_PROVA.CSV')
     return firstPPM, lastPPM,number_of_points,xaxis,dataTable
 
 

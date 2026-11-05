@@ -120,8 +120,8 @@ class MRSPlotter(QMainWindow):
         # Connect the reset combinations button
         self.ui.reset_combinations_btn.clicked.connect(self.confirm_reset_labels)
 
-        self.ui.first_ppm_input.editingFinished.connect(self.update_data_and_preview)
-        self.ui.last_ppm_input.editingFinished.connect(self.update_data_and_preview)
+        # self.ui.first_ppm_input.editingFinished.connect(self.update_data_and_preview)
+        # self.ui.last_ppm_input.editingFinished.connect(self.update_data_and_preview)
         
         # Plot options
         # Connect the configure plot button
@@ -632,18 +632,22 @@ class MRSPlotter(QMainWindow):
     def reset_label_combinations(self):
         """Reset any label combinations and restore original labels"""
         if not self.files_processed or self.dataTable is None:
-            update_status(self.ui.statusbar,"No data to reset")
+            update_status(self.ui.statusbar, "No data to reset")
             return
-        
+
+        # Restore the applied range so unconfirmed edits in the boxes are ignored
+        if hasattr(self, 'valid_ppm_range'):
+            self.ui.first_ppm_input.setText(f"{self.valid_ppm_range[0]:.2f}")
+            self.ui.last_ppm_input.setText(f"{self.valid_ppm_range[1]:.2f}")
+
         # Reload the original data from the selected files
         success = self.load_data_from_files(self.selected_files)
-        
+
         if success:
-            update_status(self.ui.statusbar,"Label combinations reset to original")
-            # This will also update the labels list and colors
+            update_status(self.ui.statusbar, "Label combinations reset to original")
             self.update_preview()
         else:
-            update_status(self.ui.statusbar,"Failed to reset label combinations")
+            update_status(self.ui.statusbar, "Failed to reset label combinations")
 
     def process_label_combinations(self, combinations):
         """Process the label combinations and update the UI"""
