@@ -1,8 +1,0 @@
-# References
-
-1. Mocioiu V, Ortega-Martorell S, Olier I, Jablonski M, Starcukova J, Lisboa P, Arús C, Julià-Sapé M. From raw data to data-analysis for magnetic resonance spectroscopy – the missing link: jMRUI2XML. *BMC Bioinformatics*. 2015;16(1):378. [doi:10.1186/s12859-015-0796-5](https://doi.org/10.1186/s12859-015-0796-5)
-2. Mocioiu V. JMRUI2XML plugin for jMRUI (Software).
-3. Ortega-Martorell S, Olier I, Julià-Sapé M, Arús C. SpectraClassifier 1.0: a user friendly, automated MRS-based classifier-development system. *BMC Bioinformatics*. 2010;11(1):106. [doi:10.1186/1471-2105-11-106](https://doi.org/10.1186/1471-2105-11-106)
-4. Stefan D, Cesare FD, Andrasescu A, Popa E, Lazariev A, Vescovo E, Strbak O, Williams S, Starcuk Z, Cabanas M, Ormondt D van, Graveron-Demilly D. Quantitation of magnetic resonance spectroscopy signals: the jMRUI software package. *Meas Sci Technol*. 2009;20(10):104035. [doi:10.1088/0957-0233/20/10/104035](https://doi.org/10.1088/0957-0233/20/10/104035)
-5. Tate AR, Underwood J, Acosta DM, Julià-Sapé M, Majós C, Moreno-Torres À, Howe FA, van der Graaf M, Lefournier V, Murphy MM, Loosemore A, Ladroue C, Wesseling P, Luc Bosson J, Cabañas ME, Simonetti AW, Gajewicz W, Calvar J, Capdevila A, Wilkins PR, Bell BA, Rémy C, Heerschap A, Watson D, Griffiths JR, Arús C. Development of a decision support system for diagnosis and grading of brain tumours using in vivo magnetic resonance single voxel spectra. *NMR in Biomedicine*. 2006;19(4):411-434. [doi:10.1002/nbm.1016](https://doi.org/10.1002/nbm.1016)
-6. Ungan et al. Early pseudoprogression and progression lesions in glioblastoma patients are both metabolically heterogeneous. *NMR in Biomedicine*. 2024. [doi:10.1002/nbm.5095](https://doi.org/10.1002/nbm.5095)
