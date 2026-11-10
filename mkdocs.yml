@@ -18,10 +18,10 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Loading data: loading-data.md
-  - Review, edit and export data: data-editor.md
-  - Labels: labels.md
-  - Plot layouts: plotting.md
-  - Toolbar: toolbar.md
-  - Exporting: exporting.md
-  - Examples: examples.md
-  - References: references.md
+  # - Review, edit and export data: data-editor.md
+  # - Labels: labels.md
+  # - Plot layouts: plotting.md
+  # - Toolbar: toolbar.md
+  # - Exporting: exporting.md
+  # - Examples: examples.md
+  # - References: references.md
