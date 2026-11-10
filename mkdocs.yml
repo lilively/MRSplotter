@@ -6,7 +6,7 @@ edit_uri: blob/main/docs/
 
 theme:
   name: readthedocs
-  navigation_depth: 3
+  navigation_depth: 2
 
 markdown_extensions:
   - toc:
@@ -18,10 +18,10 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Loading data: loading-data.md
-  # - Review, edit and export data: data-editor.md
-  # - Labels: labels.md
-  # - Plot layouts: plotting.md
-  # - Toolbar: toolbar.md
-  # - Exporting: exporting.md
-  # - Examples: examples.md
-  # - References: references.md
+  - Review, edit and export data: data-editor.md
+  - Labels: labels.md
+  - Plot layouts: plotting.md
+  - Toolbar: toolbar.md
+  - Exporting: exporting.md
+  - Examples: examples.md
+  - References: references.md
