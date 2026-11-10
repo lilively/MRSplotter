@@ -18,8 +18,9 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Loading data: loading-data.md
-  - Review, edit and export data: data-editor.md
-  - Labels: labels.md
+  - Selecting PPM range: ppm-filtering.md
+  - Review, edit and export data window: data-editor.md
+  - Labels panel: labels.md
   - Plot layouts: plotting.md
   - Toolbar: toolbar.md
   - Exporting: exporting.md
