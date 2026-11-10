@@ -22,7 +22,7 @@ On the other hand, jMRUI-generated text files do not directly export frequency v
 
 Visualizing processed spectra is crucial for quickly assessing spectral quality and identifying key metabolic patterns across different tissue types. To address this challenge, MRSplotter was developed (Figure 1). It integrates a graphical user interface with Python scripts, streamlining the workflow from data acquisition to the creation of publication-ready figures. It enables simultaneous processing of hundreds of spectra without requiring programming expertise.
 
-![Main interface of MRSplotter](img/fig01-main-interface.png)
+![Main interface of MRSplotter](img/fig01.png)
 
 *Figure 1. Main interface of MRSplotter.*
 
