@@ -1,5 +1,5 @@
 # Review, edit, and export data
-![Data editor window](img/fig8-1-review-panel.png){ style="height:90px; width:auto" }
+![Data editor window](img/fig09a-review-panel.png){width="300"}
 
 The displayed data can be previewed by clicking the file icon. A confirmation window appears (Figure 9) to verify the action. This may take a while for large files.
 

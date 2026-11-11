@@ -6,6 +6,8 @@ Initially, random colors are assigned to each class, but double-clicking a class
 
 ![Label color window](img/fig15-label-colors.png)
 
+*Figure 15. A pop-up window that allows picking colors.*
+
 
 - Create custom colors by clicking one of the white squares, selecting a color, and clicking **Add to Custom Colors**. Custom colors are saved, so they can be reused after closing and reopening the application.
 - Colors can also be entered as hexadecimal codes, which makes it easy to replicate previous plots.
