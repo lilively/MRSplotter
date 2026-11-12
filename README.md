@@ -1,9 +1,11 @@
 <!-- # MRSplotter -->
 
 
-[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.18186338-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.20627314)
+[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.18186338-383B96?style=for-the-badge)](https://doi.org/10.5281/zenodo.20627314)[![Documentation](https://img.shields.io/badge/Docs-Read_the_Docs-383B96?style=for-the-badge&logo=readthedocs&logoColor=white)](https://mrsplotter.readthedocs.io)
+
 
 <h1><img src="resources/icon-512x512.png" alt="MRS Plotter Logo" height="60" style="vertical-align: middle;"> MRSplotter</h1>
+
 
 <!-- <h1><img src="resources\icon-512x512.png" alt="MRS Plotter Logo" height="150" style="vertical-align: middle;"> </h1> -->
 
@@ -20,7 +22,7 @@ MRSplotter is a specialized software tool designed for visualizing magnetic reso
 
 <h1><img src="resources/GUI.png" alt="MRS Plotter GUI" height="440" style="vertical-align: middle;"> </h1> 
 
-*Full software documentation can be found [here](MRSplotterInstructions.pdf).*
+*Full software documentation is available at [mrsplotter.readthedocs.io](https://mrsplotter.readthedocs.io).*
 
 ## Windows Installation
 
