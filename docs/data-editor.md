@@ -1,17 +1,16 @@
 # Review, edit, and export data
-![Data editor window](img/fig09a-review-panel.png){width="300"}
+
+![Review panel](img/review-panel.png){width="400"}
 
 The displayed data can be previewed by clicking the file icon. A confirmation window appears (Figure 9) to verify the action. This may take a while for large files.
 
 ![Confirm opening the data editor](img/fig09-confirm-editor.png){width="400"}
-
 
 *Figure 9. Confirm opening the data edit window.*
 
 Once confirmed, the data editor window opens (Figure 10). It provides an interface for viewing, filtering, and modifying the data.
 
 ![Data editor window](img/fig10-data-editor.png)
-
 
 *Figure 10. Data editor window.*
 
@@ -20,7 +19,6 @@ Once confirmed, the data editor window opens (Figure 10). It provides an interfa
 Below the menu bar is a filtering section that lets you filter the data by tissue type label. The **Filter by Label** dropdown offers the option to view **All** data or a specific tissue type present in the dataset. When a tissue type is selected, only the rows with that tissue type are displayed, and the status bar updates to show the number of filtered rows (Figure 11).
 
 ![Example of filtering](img/fig11-filtering.png)
-
 
 *Figure 11. Example of filtering.*
 

@@ -1,10 +1,10 @@
 # Toolbar options
 
-Interactive navigation uses matplotlib's interactive toolbar, with additional buttons for changing the font size, toggling the legends, and resetting the plot to its original state (Figure 23).
+Interactive navigation uses matplotlib's interactive toolbar, with additional buttons for changing the font size, toggling the legends, and resetting the plot to its original state (Figure 29).
 
-![Toolbar](img/fig32-toolbar.png){width="400"}
+![Toolbar](img/fig29-toolbar.png){width="400"}
 
-*Figure 23. Toolbar for customizing the displayed plot.*
+*Figure 29. Toolbar for customizing the displayed plot.*
 
 ## Home
 
@@ -18,29 +18,27 @@ Navigate between zoom steps. Only available after the plot has been zoomed.
 
 Zooms into a selected rectangular region of the plot, including the legend.
 
-
-
 ## Configure subplots
 
-Adjust the positions of the axes and the border margins to achieve the desired figure layout. This is particularly useful when using custom grid dimensions instead of the automatic grid (Figure 25).
+Adjust the positions of the axes and the border margins to achieve the desired figure layout. This is particularly useful when using custom grid dimensions instead of the automatic grid (Figure 30).
 
-![Configure subplots dialog](img/fig33-config.png){width="400"}
+![Configure subplots dialog](img/fig30-configure-subplots.png){width="400"}
 
-*Figure 25. Optimizing the layout of subplots.*
+*Figure 30. Optimizing the layout of subplots.*
 
 ## Edit axis, curve, and image parameters
 
-Customize individual plot elements, including axis labels, plot titles, line styles, line widths, marker sizes, and legend labels.
+Customize individual plot elements, including axis labels, plot titles, line styles, line widths, marker sizes, and legend labels (Figure 31).
 
-![Figure options dialog](img/fig34-congif-axis.png){width="400"}
+![Figure options dialog](img/fig31-config-axis.png){width="400"}
 
- After modifying legend labels, click **Regenerate Automatic Legend** to apply the changes to the displayed legend.
+*Figure 31. Axis configuration window.*
 
+After modifying legend labels, click **Regenerate Automatic Legend** to apply the changes to the displayed legend (Figure 32).
 
+![Line style changed to dotted](img/fig32-plot-changed.png)
 
-![Line style changed to dotted](img/fig35-plot-changed.png) 
-
-*Figure 26. Line style changed to dotted. The legends are updated when "Regenerate Automatic Legend" is selected.*
+*Figure 32. Line style changed to dotted. The legends are updated when "Regenerate Automatic Legend" is selected.*
 
 ## Save
 

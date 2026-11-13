@@ -29,7 +29,7 @@ The Hz per point value is derived from this spectral width and the number of poi
 
 *Figure 3. jMRUI data file plotted without reference frequency, at 0.*
 
-**Workaround:** in jMRUI, click **File → Print/Export**. When the window appears (Figure 4), copy the reference frequency line into the text file (Figure 5). With this additional value, the frequency axis is corrected (Figure 6).
+**Solution:** in jMRUI, click **File → Print/Export**. When the window appears (Figure 4), copy the reference frequency line into the text file (Figure 5). With this additional value, the frequency axis is corrected (Figure 6).
 
 Centering around 4.75 ppm is also an option; however, it does not work for all cases, and small shifts in the alignment are more difficult to recognize.
 

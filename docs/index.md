@@ -6,7 +6,7 @@ Open source software for visualizing and generating publication-ready plots from
 
 [Download the latest release](https://github.com/lilively/MRSplotter/releases/latest) · [Source code on GitHub](https://github.com/lilively/MRSplotter) · [DOI: 10.5281/zenodo.20627314](https://doi.org/10.5281/zenodo.20627314)
 
-*Version 2.0  developed by Lili Fanni Tóth at MIDAlab, Institute of Biotechnology and Biomedicine (IBB), Universitat Autònoma de Barcelona (UAB).*
+*Version 2.0, developed by Lili Fanni Tóth at MIDAlab, Institute of Biotechnology and Biomedicine (IBB), Universitat Autònoma de Barcelona (UAB).*
 
 ## Overview
 

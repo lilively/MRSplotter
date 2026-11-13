@@ -1,5 +1,6 @@
+# Selecting ppm range
 
-## Selecting ppm range
+![PPM panel](img/panel-ppm.png){width="400"}
 
 The default first ppm is 0.0 and the last ppm is 4.5. If the files have either the first or the last ppm out of bounds, a warning like the one in Figure 7 is displayed.
 
