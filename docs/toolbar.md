@@ -2,7 +2,7 @@
 
 Interactive navigation uses matplotlib's interactive toolbar, with additional buttons for changing the font size, toggling the legends, and resetting the plot to its original state (Figure 23).
 
-![Toolbar](img/fig23-toolbar.png)
+![Toolbar](img/fig32-toolbar.png){width="400"}
 
 *Figure 23. Toolbar for customizing the displayed plot.*
 
@@ -17,26 +17,28 @@ Navigate between zoom steps. Only available after the plot has been zoomed.
 ## Zoom
 
 Zooms into a selected rectangular region of the plot, including the legend.
-<!-- 
-![Zooming into a plot](img/fig24-zoom.png) -->
 
-*Figure 24. When zooming, the peak's intensity and frequency can easily be checked, as the x and y positions of the cursor are displayed at the top right (purple square).*
+
 
 ## Configure subplots
 
 Adjust the positions of the axes and the border margins to achieve the desired figure layout. This is particularly useful when using custom grid dimensions instead of the automatic grid (Figure 25).
-<!-- 
-![Configure subplots dialog](img/fig25-configure-subplots.png) -->
+
+![Configure subplots dialog](img/fig33-config.png){width="400"}
 
 *Figure 25. Optimizing the layout of subplots.*
 
 ## Edit axis, curve, and image parameters
 
-Customize individual plot elements, including axis labels, plot titles, line styles, line widths, marker sizes, and legend labels. After modifying legend labels, click **Regenerate Automatic Legend** to apply the changes to the displayed legend (Figure 26).
+Customize individual plot elements, including axis labels, plot titles, line styles, line widths, marker sizes, and legend labels.
 
-<!-- ![Figure options dialog](img/fig26a-figure-options.png)
+![Figure options dialog](img/fig34-congif-axis.png){width="400"}
 
-![Line style changed to dotted](img/fig26b-dotted-lines.png) -->
+ After modifying legend labels, click **Regenerate Automatic Legend** to apply the changes to the displayed legend.
+
+
+
+![Line style changed to dotted](img/fig35-plot-changed.png) 
 
 *Figure 26. Line style changed to dotted. The legends are updated when "Regenerate Automatic Legend" is selected.*
 
